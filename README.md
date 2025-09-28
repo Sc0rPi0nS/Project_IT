@@ -1,3 +1,3 @@
 This is a group project in the PSCP course.
 
-member Can, Yeen, Sea, ..., ...
+member Can, Yeen, Sea, Nine, Imax
