@@ -21,6 +21,7 @@ bg_img = pygame.image.load("background/bg3.png").convert_alpha()
 bg_img = pygame.transform.scale(bg_img, (920, 750))
 
 # image
+img1 = pygame.image.load("money.png").convert_alpha()
 
 # สร้าง rect สำหรับปุ่ม
 start_rect = pygame.Rect(0, 0, 300, 100)
