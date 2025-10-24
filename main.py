@@ -1,6 +1,8 @@
 '''Menu Interface'''
 import pygame
 import subprocess
+from inventory_system import 'br'
+from item_class import 'br'
 pygame.init()
 
 # header
