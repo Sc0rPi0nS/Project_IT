@@ -45,12 +45,22 @@ class Block:
         pygame.draw.rect(SCREEN, self.color, self.rect)
         pygame.draw.rect(SCREEN, BLACK, self.rect, 2)
 
+    def rotate(self):
+        """หมุนบล็อก 90 องศา (สลับแนวกว้าง/สูง)"""
+        self.rect.width, self.rect.height = self.rect.height, self.rect.width
+        self.snap_to_grid()
+
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 self.dragging = True
                 mouse_x, mouse_y = event.pos
                 self.offset = (self.rect.x - mouse_x, self.rect.y - mouse_y)
+
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:  # คลิกขวา
+            if self.rect.collidepoint(event.pos):
+                if not self.dragging:
+                    self.rotate()
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if self.dragging:
