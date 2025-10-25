@@ -64,13 +64,13 @@ class Item:
 # ตัวอย่าง: ขวดน้ำ 1x2 ช่อง หมุนได้ ไม่สแต็ก
 TRIAL_DEF = ItemDef(
     id="trial_water",
-    name="Purified Water (Trial)",
+    name="Purified Water",
     size_w=1, size_h=2,
     rotatable=True,
     stackable=False,
     weight=1.0,
     value=120,
-    image_path="Project_IT\item\น้ำสะอาด.png",
+    image_path = "Project_IT\item\น้ำสะอาด.png"
 )
 
 def make_trial_item(quantity: int = 1) -> Item:
