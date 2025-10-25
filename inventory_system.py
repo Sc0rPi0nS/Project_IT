@@ -4,33 +4,45 @@ import random
 
 pygame.init()
 
-# ------------------ ตั้งค่า ------------------
-SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-SCREEN_WIDTH, SCREEN_HEIGHT = SCREEN.get_size()
-pygame.display.set_caption("Inventory System (Free Rotate While Dragging)")
+SCREEN = pygame.display.set_mode((920, 750))
+SCREEN_WIDTH, SCREEN_HEIGHT = 920, 750
+pygame.display.set_caption("Dual Inventory System (Aligned Layout)")
 
-GRID_SIZE = 80
-ROWS, COLS = 6, 6
-MARGIN_TOP = 300
+GRID_SIZE = 60         # ขนาดช่องเล็กลงเพื่อบาลานซ์
+ROWS, COLS = 5, 5
+MARGIN_TOP = 140
 
 WHITE = (255, 255, 255)
 GRAY = (200, 200, 200)
 BLACK = (0, 0, 0)
 ITEM_COLORS = [(255, 80, 80), (80, 200, 120), (80, 120, 255), (255, 220, 100)]
 
-GRID_ORIGIN = (400, MARGIN_TOP)
+# ---------- Layout ----------
+TOTAL_GRID_WIDTH = COLS * GRID_SIZE
+TOTAL_GRID_HEIGHT = ROWS * GRID_SIZE
+GAP_X = 100  # ช่องว่างระหว่าง inventory กับ box
+
+# คำนวณตำแหน่งให้ทุกอย่างอยู่กลางจอแนวนอน
+total_width = TOTAL_GRID_WIDTH + GAP_X + GRID_SIZE * 2
+start_x = (SCREEN_WIDTH - total_width) // 2
+
+# INVENTORY (ซ้าย)
+GRID_ORIGIN = (start_x, MARGIN_TOP)
+
+# RANDOM BOX (ขวา) — อยู่ "เสมอระดับบน" กับ inventory
 BOX_WIDTH, BOX_HEIGHT = GRID_SIZE * 2, GRID_SIZE
-BOX_X = SCREEN_WIDTH - BOX_WIDTH - 400
-BOX_Y = SCREEN_HEIGHT // 2 - BOX_HEIGHT // 2
+BOX_X = GRID_ORIGIN[0] + TOTAL_GRID_WIDTH + GAP_X
+BOX_Y = MARGIN_TOP  # 🔹 เสมอกับ grid บน
 BOX_RECT = pygame.Rect(BOX_X, BOX_Y, BOX_WIDTH, BOX_HEIGHT)
 
+# SPAWN ZONE (ใต้ปุ่ม Random แต่ขยับขึ้นมาใกล้ grid)
 SPAWN_ROWS, SPAWN_COLS = 3, 3
-SPAWN_ORIGIN = (BOX_X - GRID_SIZE // 2, BOX_RECT.bottom + 40)
-SPAWN_RECT = pygame.Rect(
-    SPAWN_ORIGIN[0], SPAWN_ORIGIN[1],
-    SPAWN_COLS * GRID_SIZE, SPAWN_ROWS * GRID_SIZE
-)
-
+SPAWN_WIDTH = SPAWN_COLS * GRID_SIZE
+SPAWN_HEIGHT = SPAWN_ROWS * GRID_SIZE
+SPAWN_X = BOX_X + BOX_WIDTH // 2 - SPAWN_WIDTH // 2
+SPAWN_Y = BOX_RECT.bottom + 20  # 🔹 ขยับขึ้นจาก 35 → 20
+SPAWN_ORIGIN = (SPAWN_X, SPAWN_Y)
+SPAWN_RECT = pygame.Rect(SPAWN_X, SPAWN_Y, SPAWN_WIDTH, SPAWN_HEIGHT)
 
 # ------------------ ฟังก์ชันวาด ------------------
 def draw_grid(origin):
@@ -52,8 +64,8 @@ def draw_item_box():
     pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
     pygame.draw.rect(SCREEN, BLACK, BOX_RECT, 3)
     font = pygame.font.SysFont(None, 32)
-    SCREEN.blit(font.render("Random Item", True, BLACK),
-                font.render("Random Item", True, BLACK).get_rect(center=BOX_RECT.center))
+    SCREEN.blit(font.render("Search", True, BLACK),
+                font.render("Search", True, BLACK).get_rect(center=BOX_RECT.center))
 
 
 # ------------------ คลาสบล็อก ------------------
