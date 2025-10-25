@@ -15,7 +15,9 @@ pygame.display.set_caption("Backpack")
 # color
 white = (255, 255, 255)
 green = (0, 255, 0)
-brown = (139, 69, 19)
+frame = (96, 62, 62)
+brown = (218, 169, 107)
+text_press = (145, 92, 67)
 
 #music
 pygame.mixer.music.load("sound/bg_music.mp3")
@@ -100,9 +102,9 @@ while running:
     mouse_pos = pygame.mouse.get_pos()
 
     if state == "menu":
-            start_color = green if start_rect.collidepoint(mouse_pos) else white
-            setting_color = green if setting_rect.collidepoint(mouse_pos) else white
-            credits_color = green if credits_rect.collidepoint(mouse_pos) else white
+            start_color = white if start_rect.collidepoint(mouse_pos) else text_press
+            setting_color = white if setting_rect.collidepoint(mouse_pos) else text_press
+            credits_color = white if credits_rect.collidepoint(mouse_pos) else text_press
 
             start_text = sys_font.render("START", True, start_color)
             setting_text = sys_font.render("SETTING", True, setting_color)
@@ -117,8 +119,11 @@ while running:
             credits_box.inflate_ip(padding, padding)
 
             pygame.draw.rect(screen, brown, start_box, border_radius=20)
+            pygame.draw.rect(screen, frame, start_box, 5, border_radius=20)
             pygame.draw.rect(screen, brown, setting_box, border_radius=20)
+            pygame.draw.rect(screen, frame, setting_box, 5, border_radius=20)
             pygame.draw.rect(screen, brown, credits_box, border_radius=20)
+            pygame.draw.rect(screen, frame, credits_box, 5, border_radius=20)
             screen.blit(start_text, start_text.get_rect(center=start_rect.center))
             screen.blit(setting_text, setting_text.get_rect(center=setting_rect.center))
             screen.blit(credits_text, credits_text.get_rect(center=credits_rect.center))
@@ -127,16 +132,16 @@ while running:
     elif state == "setting":
         # วาดกรอบสี่เหลี่ยม
         pygame.draw.rect(screen, brown, setting_frame, border_radius=20)
-        pygame.draw.rect(screen, green, setting_frame, 5, border_radius=20)
+        pygame.draw.rect(screen, frame, setting_frame, 5, border_radius=20)
 
         # แสดง Volume ตรงกลาง
-        setting_font = sys_font.render("SETTING", True, white)
-        vol_text = small_font.render(f"Volume: {int(volume*100)}%", True, white)
+        setting_font = sys_font.render("SETTING", True, text_press)
+        vol_text = small_font.render(f"Volume: {int(volume*100)}%", True, text_press)
         screen.blit(vol_text,(350,390))
 
                 # ปุ่ม + / -
-        plus_color = green if vol_plus_rect.collidepoint(mouse_pos) else white
-        minus_color = green if vol_minus_rect.collidepoint(mouse_pos) else white
+        plus_color = white if vol_plus_rect.collidepoint(mouse_pos) else text_press
+        minus_color = white if vol_minus_rect.collidepoint(mouse_pos) else text_press
 
         # ตัวอักษร + / - บนปุ่ม (ไม่มี background)
         plus_text = small_font.render("+", True, plus_color)# สีตัวอักษร
@@ -147,15 +152,15 @@ while running:
 
 
         # ปุ่ม Back
-        back_color = green if back_rect.collidepoint(mouse_pos) else white
+        back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
         screen.blit(back_text, back_text.get_rect(center=back_rect.center))
 
     elif state == "credits":
         pygame.draw.rect(screen, brown, credits_frame, border_radius=20)
-        pygame.draw.rect(screen, green, credits_frame, 5, border_radius=20)
+        pygame.draw.rect(screen, frame, credits_frame, 5, border_radius=20)
 
-        back_color = green if back_rect.collidepoint(mouse_pos) else white
+        back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
         screen.blit(back_text, back_text.get_rect(center=back_rect.center))
 
