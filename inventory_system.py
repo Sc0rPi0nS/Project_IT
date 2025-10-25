@@ -44,6 +44,13 @@ SPAWN_Y = BOX_RECT.bottom + 20  # 🔹 ขยับขึ้นจาก 35 → 
 SPAWN_ORIGIN = (SPAWN_X, SPAWN_Y)
 SPAWN_RECT = pygame.Rect(SPAWN_X, SPAWN_Y, SPAWN_WIDTH, SPAWN_HEIGHT)
 
+TRASH_WIDTH = GRID_SIZE * 2
+TRASH_HEIGHT = GRID_SIZE
+TRASH_X = SPAWN_RECT.centerx - TRASH_WIDTH // 2
+TRASH_Y = SPAWN_RECT.bottom + 30  # ห่างจาก spawn zone ลงมาหน่อย
+TRASH_RECT = pygame.Rect(TRASH_X, TRASH_Y, TRASH_WIDTH, TRASH_HEIGHT)
+
+
 # ------------------ ฟังก์ชันวาด ------------------
 def draw_grid(origin):
     ox, oy = origin
@@ -59,6 +66,14 @@ def draw_spawn_zone():
             pygame.draw.rect(SCREEN, (220, 240, 255), (ox + c * GRID_SIZE, oy + r * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
     pygame.draw.rect(SCREEN, BLACK, SPAWN_RECT, 3)
 
+def draw_trash():
+    # กล่องสีเทาอ่อนแทนถังขยะชั่วคราว
+    pygame.draw.rect(SCREEN, (240, 240, 240), TRASH_RECT)
+    pygame.draw.rect(SCREEN, BLACK, TRASH_RECT, 3)
+
+    font = pygame.font.SysFont(None, 28)
+    text_surface = font.render("TRASH", True, BLACK)
+    SCREEN.blit(text_surface, text_surface.get_rect(center=TRASH_RECT.center))
 
 def draw_item_box():
     pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
@@ -83,25 +98,28 @@ class Block:
         pygame.draw.rect(SCREEN, BLACK, self.rect, 2)
 
     def handle_event(self, event, all_blocks, keys):
+        removed = False  # จะเป็น True ถ้าต้องลบทิ้ง
         # เริ่มลาก
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 self.dragging = True
                 mx, my = event.pos
                 self.offset = (self.rect.x - mx, self.rect.y - my)
-
         # ปล่อยเมาส์
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.dragging:
                 self.dragging = False
-                self.snap_to_nearest(all_blocks)
-
+                # ถ้าปล่อยลงบนถังขยะ -> ลบทิ้ง
+                if TRASH_RECT.colliderect(self.rect):
+                    removed = True
+                else:
+                    # ปกติ snap กลับกริด / spawn zone
+                    self.snap_to_nearest(all_blocks)
         # ระหว่างลาก
         elif event.type == pygame.MOUSEMOTION and self.dragging:
             mx, my = event.pos
             self.rect.x = mx + self.offset[0]
             self.rect.y = my + self.offset[1]
-
         # ✅ หมุนได้ทันทีระหว่างลาก (ไม่ตรวจชน)
         if self.dragging:
             if keys[pygame.K_r] and not self.last_r_state:
@@ -109,6 +127,7 @@ class Block:
                 self.last_r_state = True
             elif not keys[pygame.K_r]:
                 self.last_r_state = False
+        return removed
 
     def rotate(self):
         """หมุน 90° โดยไม่ตรวจชน"""
@@ -179,6 +198,7 @@ while True:
     draw_grid(GRID_ORIGIN)
     draw_item_box()
     draw_spawn_zone()
+    draw_trash()
     for b in blocks:
         b.draw()
 
@@ -200,9 +220,16 @@ while True:
                 else:
                     blocks.append(random_item())
 
-        # ส่ง event ให้ทุก block
+        # ส่ง event ให้ทุก block + เช็กถังขยะ
+        to_remove = []
         for b in blocks:
-            b.handle_event(event, blocks, keys)
+            if b.handle_event(event, blocks, keys):
+                to_remove.append(b)
+
+        # ลบรายการที่ถูกทิ้ง
+        for dead in to_remove:
+            if dead in blocks:
+                blocks.remove(dead)
 
     pygame.display.flip()
     clock.tick(60)
