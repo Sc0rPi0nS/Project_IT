@@ -4,14 +4,14 @@ import sys
 pygame.init()
 
 # ------------------ ตั้งค่า ------------------
-SCREEN = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+SCREEN = pygame.display.set_mode((920, 750))
 SCREEN_WIDTH, SCREEN_HEIGHT = SCREEN.get_size()
 pygame.display.set_caption("Dual Inventory System (2x1 block)")
 
-GRID_SIZE = 80
+GRID_SIZE = 50
 ROWS, COLS = 6, 6
-GAP = 100  # ช่องว่างระหว่าง 2 ตาราง
-MARGIN_TOP = 300
+GAP = 25  # ช่องว่างระหว่าง 2 ตาราง
+MARGIN_TOP = 100
 
 # สี
 WHITE = (255, 255, 255)
@@ -20,8 +20,8 @@ RED = (255, 80, 80)
 BLACK = (0, 0, 0)
 
 # ตำแหน่งเริ่มของสองตาราง
-LEFT_GRID_ORIGIN = (400, MARGIN_TOP)
-RIGHT_GRID_ORIGIN = (500 + COLS * GRID_SIZE + GAP, MARGIN_TOP)
+LEFT_GRID_ORIGIN = (100, MARGIN_TOP)
+RIGHT_GRID_ORIGIN = (200 + COLS * GRID_SIZE + GAP, MARGIN_TOP)
 
 
 # ------------------ ฟังก์ชันวาด ------------------
