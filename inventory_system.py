@@ -3,11 +3,16 @@ import sys
 import random
 from item_class import Item, make_trial_item, item_pixel_size  # เชื่อมกับ item_class
 
-# 👉 import factory อื่นที่อยากสุ่ม (ถ้ามี)
+# 👉 factory อื่นที่อยากสุ่ม (ถ้ามี)
 try:
     from item_class import make_battery_item
 except Exception:
     make_battery_item = None
+
+try:
+    from item_class import make_rtx_item
+except Exception:
+    make_rtx_item = None
 
 pygame.init()
 
@@ -136,7 +141,7 @@ class Block:
         else:
             pygame.draw.rect(SCREEN, self.color, self.rect)
         pygame.draw.rect(SCREEN, BLACK, self.rect, 2)
-        # ❌ ไม่มีการวาด x1/xN อีกต่อไป
+        # ❌ ไม่มีเลขคูณ x1/xN อีกต่อไป
 
     def handle_event(self, event, all_blocks, keys):
         removed = False
@@ -207,29 +212,56 @@ def create_block_from_item(item: Item):
     sx, sy = SPAWN_RECT.centerx - w // 2, SPAWN_RECT.centery - h // 2
     return Block(sx, sy, w, h, random.choice(ITEM_COLORS), item=item)
 
-# ------------------ DROP TABLE ------------------
-DROP_TABLE = [
-    {"name": "Purified Water", "factory": lambda: make_trial_item(1), "weight": 60},
-]
-if callable(make_battery_item):
-    DROP_TABLE.append({"name": "Battery", "factory": lambda: make_battery_item(1), "weight": 40})
+# ------------------ DROP TABLE (แก้ง่าย ปลอดภัย) ------------------
+# ปรับเรทแค่ตรงนี้พอ! (ไม่ต้องรวมเป็น 100 ก็ได้)
+DROP_WEIGHTS = {
+    "Purified Water": 50,
+    "Battery":        30,
+    "RTX GPU":        20,
+}
+
+# map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
+FACTORIES = {
+    "Purified Water": lambda: make_trial_item(1),
+    "Battery":        (lambda: make_battery_item(1)) if callable(make_battery_item) else None,
+    "RTX GPU":        (lambda: make_rtx_item(1))     if callable(make_rtx_item) else None,
+}
+
+def build_drop_table():
+    table = []
+    for name, weight in DROP_WEIGHTS.items():
+        fac = FACTORIES.get(name)
+        if fac is None or weight <= 0:
+            continue
+        table.append({"name": name, "factory": fac, "weight": weight})
+    return table
+
+DROP_TABLE = build_drop_table()
 
 def show_drop_rates():
     total = sum(d["weight"] for d in DROP_TABLE)
     print("\n🎯 Current Drop Rates:")
-    for d in DROP_TABLE:
-        print(f" - {d['name']:<15}: {d['weight'] / total * 100:>5.1f}%")
+    if total <= 0 or not DROP_TABLE:
+        print(" (empty)")
+    else:
+        for d in DROP_TABLE:
+            pct = (d["weight"] / total * 100)
+            print(f" - {d['name']:<15}: {pct:>5.1f}%")
     print("──────────────────────────────")
 
 def roll_item_from_drop_table():
-    total = sum(e["weight"] for e in DROP_TABLE if e["weight"] > 0)
+    entries = [e for e in DROP_TABLE if e.get("weight", 0) > 0]
+    if not entries:
+        # กันพังถ้าเผลอลบหมด
+        return make_trial_item(1)
+    total = sum(e["weight"] for e in entries)
     r = random.uniform(0, total)
     acc = 0.0
-    for e in DROP_TABLE:
+    for e in entries:
         acc += e["weight"]
         if r <= acc:
             return e["factory"]()
-    return DROP_TABLE[-1]["factory"]()
+    return entries[-1]["factory"]()
 
 # ------------------ Main ------------------
 blocks, clock = [], pygame.time.Clock()
@@ -241,7 +273,8 @@ while True:
     draw_item_box()
     draw_spawn_zone()
     draw_trash()
-    for b in blocks: b.draw()
+    for b in blocks:
+        b.draw()
     draw_inventory_value(calc_inventory_total_value(blocks))
 
     keys = pygame.key.get_pressed()
@@ -255,8 +288,9 @@ while True:
                 new_item = roll_item_from_drop_table()
                 new_block = create_block_from_item(new_item)
                 blocks.append(new_block)
-        for b in blocks:
+        for b in list(blocks):
             if b.handle_event(event, blocks, keys):
                 blocks.remove(b)
+
     pygame.display.flip()
     clock.tick(60)

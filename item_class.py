@@ -92,6 +92,20 @@ BATTERY_DEF = ItemDef(
 def make_battery_item(quantity: int = 1) -> Item:
     return Item(definition=BATTERY_DEF, quantity=quantity)
 
+# ====== ไอเทมตัวทดลอง 3: RTX GPU ======
+RTX_DEF = ItemDef(
+    id="gpu_rtx",
+    name="RTX Graphics Card",
+    size_w=3, size_h=2,
+    rotatable=True,
+    stackable=False,
+    weight=2.5,
+    value=5200,
+    image_path="Project_IT\item\RTX พัง.png"
+)
+
+def make_rtx_item(quantity: int = 1) -> Item:
+    return Item(definition=RTX_DEF, quantity=quantity)
 
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
