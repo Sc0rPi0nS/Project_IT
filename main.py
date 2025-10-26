@@ -1,6 +1,7 @@
 '''Menu Interface'''
 import pygame
 import subprocess
+import json
 "from inventory_system import"
 "from item_class import"
 pygame.init()
@@ -8,6 +9,7 @@ pygame.init()
 #state
 state = "menu"
 volume = 1
+
 
 # header
 pygame.display.set_caption("Backpack")
@@ -23,6 +25,8 @@ text_press = (145, 92, 67)
 pygame.mixer.music.load("sound/bg_music.mp3")
 pygame.mixer.music.set_volume(volume)
 pygame.mixer.music.play(-1)
+click_sound = pygame.mixer.Sound("sound/click-sound.mp3")
+click_sound.set_volume(1)
 
 # resolution
 screen = pygame.display.set_mode((920, 750))
@@ -35,31 +39,28 @@ small_font = pygame.font.SysFont("bytebounce", 50)
 bg_img = pygame.image.load("background/bg3.png").convert_alpha()
 bg_img = pygame.transform.scale(bg_img, (920, 750))
 
-# image
-
-
 # สร้าง rect สำหรับปุ่ม
 
 start_rect = pygame.Rect(0, 0, 300, 100)
-start_rect.center = (470, 375)
+start_rect.center = (470, 320)
 
 setting_rect = pygame.Rect(0, 0, 400, 100)
-setting_rect.center = (470, 500)
+setting_rect.center = (470, 450)
 
 credits_rect = pygame.Rect(0, 0, 500, 100)
-credits_rect.center = (470, 625)
+credits_rect.center = (470, 580)
 
 setting_frame = pygame.Rect(0, 0, 400, 200)
 setting_frame.center = (470, 375)
 
-credits_frame = pygame.Rect(0, 0, 400, 600)
-credits_frame.center = (470, 375)
+credits_frame = pygame.Rect(0, 0, 600, 560)
+credits_frame.center = (470, 320)
 
 setting_title = pygame.Rect(0, 0, 400, 100)
 setting_title.center = (470, 500)
 
 back_rect = pygame.Rect(0, 0, 200, 60)
-back_rect.center = (470, 600)
+back_rect.center = (470, 630)
 
 vol_plus_rect = pygame.Rect(0, 0, 50, 50)
 vol_plus_rect.center = (620, 409)
@@ -75,26 +76,33 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "menu":
             if start_rect.collidepoint(event.pos):
-                subprocess.Popen(["python", "inventory_system.py"])
+                click_sound.play()
+                subprocess.Popen(["python", "inventory_system.py", str(volume)])
                 running = False
 
             elif setting_rect.collidepoint(event.pos):
+                click_sound.play()
                 state = "setting"
 
             elif credits_rect.collidepoint(event.pos):
+                click_sound.play()
                 state = "credits"
 
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "setting":
+            click_sound.play()
             if back_rect.collidepoint(event.pos):
                 state = "menu"
             elif vol_plus_rect.collidepoint(event.pos):
+                click_sound.play()
                 volume = min(1.0, volume + 0.1)
                 pygame.mixer.music.set_volume(volume)
             elif vol_minus_rect.collidepoint(event.pos):
+                click_sound.play()
                 volume = max(0.0, volume - 0.1)
                 pygame.mixer.music.set_volume(volume)
 
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "credits":
+            click_sound.play()
             if back_rect.collidepoint(event.pos):
                 state = "menu"
 
@@ -136,7 +144,7 @@ while running:
 
         # แสดง Volume ตรงกลาง
         setting_font = sys_font.render("SETTING", True, text_press)
-        vol_text = small_font.render(f"Volume: {int(volume*100)}%", True, text_press)
+        vol_text = small_font.render(f"Volume: {int(round(volume*100))}%", True, text_press)
         screen.blit(vol_text,(350,390))
 
                 # ปุ่ม + / -
@@ -159,6 +167,42 @@ while running:
     elif state == "credits":
         pygame.draw.rect(screen, brown, credits_frame, border_radius=20)
         pygame.draw.rect(screen, frame, credits_frame, 5, border_radius=20)
+        
+            # ---------- สร้าง Surface สำหรับ clipping ----------
+        clip_surf = screen.subsurface(credits_frame)  # วาดเฉพาะในกรอบ
+
+        credits_lines = [
+            "CREDITS",
+            "",
+            "Game Design : Thanawit Wanthong",
+            "Programming : Thanawit Wanthong",
+            "Art & UI : Thanawit Wanthong",
+            "Music : Free Background Theme",
+            "",
+            "Special Thanks",
+            "You, for playing this game!",
+            "",
+            "Thank you for playing!",
+        ]
+
+        credit_font = pygame.font.SysFont("bytebounce", 40)
+        line_height = 50
+        total_height = len(credits_lines) * line_height
+
+        if "credits_y" not in locals():
+            credits_y = credits_frame.height  # เริ่มจากด้านล่างกรอบ
+
+        # วาดแต่ละบรรทัดภายใน clip_surf
+        for i, text in enumerate(credits_lines):
+            surf = credit_font.render(text, True, text_press)
+            rect = surf.get_rect(center=(credits_frame.width // 2, credits_y + i * line_height))
+            clip_surf.blit(surf, rect)
+
+        # เลื่อนขึ้น
+        credits_y -= 0.1  # ความเร็วปรับได้
+        if credits_y + total_height < 0:  # ถ้าเลื่อนหมด
+            credits_y = credits_frame.height  # เริ่มใหม่ หรือกลับเมนู
+
 
         back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
