@@ -1,24 +1,8 @@
 import pygame
 import sys
 import random
-from item_class import Item, make_trial_item, item_pixel_size,make_medkit_item # เชื่อมกับ item_class
-
-# 👉 factory อื่นที่อยากสุ่ม (ถ้ามี)
-try:
-    from item_class import make_battery_item
-except Exception:
-    make_battery_item = None
-
-try:
-    from item_class import make_rtx_item
-except Exception:
-    make_rtx_item = None
-
-try:
-    from item_class import make_canfood_item
-except Exception:
-    make_canfood_item = None
-
+from item_class import Item, make_trial_item, item_pixel_size\
+    , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item# เชื่อมกับ item_class
 
 pygame.init()
 
