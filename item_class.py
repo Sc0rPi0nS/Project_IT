@@ -69,7 +69,7 @@ TRIAL_DEF = ItemDef(
     stackable=False,
     weight=1.0,
     value=120,
-    image_path="Project_IT/item/น้ำสะอาด.png"
+    image_path="item/น้ำสะอาด.png"
 )
 
 def make_trial_item(quantity: int = 1) -> Item:
@@ -86,7 +86,7 @@ BATTERY_DEF = ItemDef(
     max_stack=4,
     weight=0.3,
     value=80,
-    image_path="Project_IT\item\เเบตเตอรี่.png"
+    image_path="item\เเบตเตอรี่.png"
 )
 
 def make_battery_item(quantity: int = 1) -> Item:
@@ -101,7 +101,7 @@ RTX_DEF = ItemDef(
     stackable=False,
     weight=2.5,
     value=5200,
-    image_path="Project_IT\item\RTX พัง.png"
+    image_path="item\RTX พัง.png"
 )
 
 def make_rtx_item(quantity: int = 1) -> Item:
