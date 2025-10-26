@@ -9,6 +9,7 @@ pygame.init()
 state = "menu"
 volume = 1
 
+
 # header
 pygame.display.set_caption("Backpack")
 
@@ -23,6 +24,8 @@ text_press = (145, 92, 67)
 pygame.mixer.music.load("sound/bg_music.mp3")
 pygame.mixer.music.set_volume(volume)
 pygame.mixer.music.play(-1)
+click_sound = pygame.mixer.Sound("sound/click-sound.mp3")
+click_sound.set_volume(1)
 
 # resolution
 screen = pygame.display.set_mode((920, 750))
@@ -41,18 +44,18 @@ bg_img = pygame.transform.scale(bg_img, (920, 750))
 # สร้าง rect สำหรับปุ่ม
 
 start_rect = pygame.Rect(0, 0, 300, 100)
-start_rect.center = (470, 375)
+start_rect.center = (470, 320)
 
 setting_rect = pygame.Rect(0, 0, 400, 100)
-setting_rect.center = (470, 500)
+setting_rect.center = (470, 450)
 
 credits_rect = pygame.Rect(0, 0, 500, 100)
-credits_rect.center = (470, 625)
+credits_rect.center = (470, 580)
 
 setting_frame = pygame.Rect(0, 0, 400, 200)
 setting_frame.center = (470, 375)
 
-credits_frame = pygame.Rect(0, 0, 400, 600)
+credits_frame = pygame.Rect(0, 0, 800, 610)
 credits_frame.center = (470, 375)
 
 setting_title = pygame.Rect(0, 0, 400, 100)
@@ -75,26 +78,33 @@ while running:
 
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "menu":
             if start_rect.collidepoint(event.pos):
+                click_sound.play()
                 subprocess.Popen(["python", "inventory_system.py"])
                 running = False
 
             elif setting_rect.collidepoint(event.pos):
+                click_sound.play()
                 state = "setting"
 
             elif credits_rect.collidepoint(event.pos):
+                click_sound.play()
                 state = "credits"
 
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "setting":
+            click_sound.play()
             if back_rect.collidepoint(event.pos):
                 state = "menu"
             elif vol_plus_rect.collidepoint(event.pos):
+                click_sound.play()
                 volume = min(1.0, volume + 0.1)
                 pygame.mixer.music.set_volume(volume)
             elif vol_minus_rect.collidepoint(event.pos):
+                click_sound.play()
                 volume = max(0.0, volume - 0.1)
                 pygame.mixer.music.set_volume(volume)
 
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "credits":
+            click_sound.play()
             if back_rect.collidepoint(event.pos):
                 state = "menu"
 
