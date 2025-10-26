@@ -143,3 +143,5 @@ def make_canfood_item(quantity: int = 1) -> Item:
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size
+
+# Can
