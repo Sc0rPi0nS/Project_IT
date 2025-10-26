@@ -107,6 +107,23 @@ RTX_DEF = ItemDef(
 def make_rtx_item(quantity: int = 1) -> Item:
     return Item(definition=RTX_DEF, quantity=quantity)
 
+# ====== ไอเทมตัวทดลอง 4: can food ======
+CANFOOD_DEF = ItemDef(
+    id="can_food",
+    name="Canned Food",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=200,
+    image_path="item/can food.png"
+)
+
+def make_canfood_item(quantity: int = 1) -> Item:
+    return Item(definition=CANFOOD_DEF, quantity=quantity)
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size
