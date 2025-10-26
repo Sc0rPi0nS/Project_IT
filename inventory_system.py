@@ -28,6 +28,14 @@ start_x = (SCREEN_WIDTH - total_width) // 2
 
 GRID_ORIGIN = (start_x, MARGIN_TOP)
 
+INVENTORY_RECT = pygame.Rect(
+    GRID_ORIGIN[0],
+    GRID_ORIGIN[1],
+    TOTAL_GRID_WIDTH,
+    TOTAL_GRID_HEIGHT
+)
+
+
 BOX_WIDTH, BOX_HEIGHT = GRID_SIZE * 2, GRID_SIZE
 BOX_X = GRID_ORIGIN[0] + TOTAL_GRID_WIDTH + GAP_X
 BOX_Y = MARGIN_TOP
@@ -54,6 +62,13 @@ def draw_grid(origin):
     for r in range(ROWS):
         for c in range(COLS):
             pygame.draw.rect(SCREEN, GRAY, (ox + c * GRID_SIZE, oy + r * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
+
+def draw_inventory_value(total_value):
+    font = pygame.font.SysFont(None, 28)
+    text_surface = font.render(f"Value : {total_value}", True, BLACK)
+    text_x = INVENTORY_RECT.centerx - text_surface.get_width() // 2
+    text_y = INVENTORY_RECT.bottom + 10
+    SCREEN.blit(text_surface, (text_x, text_y))
 
 
 def draw_spawn_zone():
@@ -132,12 +147,6 @@ class Block:
         else:
             pygame.draw.rect(SCREEN, self.color, self.rect)
             pygame.draw.rect(SCREEN, BLACK, self.rect, 2)
-
-        # ชื่อ item
-        if self.item:
-            font = pygame.font.SysFont(None, 18)
-            name_surface = font.render(self.item.definition.name, True, BLACK)
-            SCREEN.blit(name_surface, (self.rect.x + 4, self.rect.y - 16))
 
         # จำนวน stack
         if self.item and getattr(self.item.definition, "stackable", False):
@@ -226,6 +235,16 @@ class Block:
 def is_item_in_spawn_zone(block):
     return SPAWN_RECT.colliderect(block.rect)
 
+def is_item_in_inventory_zone(block):
+    # ถือว่าอยู่ใน inventory ถ้า block วางซ้อนทับกริดทางซ้าย
+    return INVENTORY_RECT.colliderect(block.rect)
+
+def calc_inventory_total_value(blocks):
+    total = 0
+    for b in blocks:
+        if b.item and is_item_in_inventory_zone(b):
+            total += b.item.total_value  # ใช้ total_value จาก item_class
+    return total
 
 def create_block_from_item(item: Item):
     """แปลง Item จริงจาก item_class เป็น Block ในเกม"""
@@ -250,6 +269,10 @@ while True:
 
     for b in blocks:
         b.draw()
+
+    # === คำนวณราคาแล้วแสดงใต้ inventory zone ===
+    inv_total_value = calc_inventory_total_value(blocks)
+    draw_inventory_value(inv_total_value)
 
     keys = pygame.key.get_pressed()
 
