@@ -1,13 +1,13 @@
 import pygame
 import sys
 import random
-from item_class import Item, make_trial_item, item_pixel_size  # ✅ ดึงจาก item_class
+from item_class import Item, make_trial_item, item_pixel_size  # เชื่อมกับ item_class
 
 pygame.init()
 
 SCREEN = pygame.display.set_mode((920, 750))
 SCREEN_WIDTH, SCREEN_HEIGHT = 920, 750
-pygame.display.set_caption("Dual Inventory System (Aligned Layout)")
+pygame.display.set_caption("Dual Inventory System (Contain + Auto-Trim)")
 
 GRID_SIZE = 60
 ROWS, COLS = 5, 5
@@ -81,7 +81,7 @@ def draw_item_box():
                 font.render("Search", True, BLACK).get_rect(center=BOX_RECT.center))
 
 
-# ------------------ คลาสบล็อก (เชื่อมกับ item_class + แสดงภาพ + หมุนภาพ) ------------------
+# ------------------ คลาส Block (เห็นรูปเต็ม: contain + auto-trim) ------------------
 class Block:
     def __init__(self, x, y, w, h, color, item: Item = None):
         self.rect = pygame.Rect(x, y, w, h)
@@ -90,44 +90,74 @@ class Block:
         self.offset = (0, 0)
         self.spawn_point = (x, y)
         self.last_r_state = False
-        self.item = item  # ✅ เก็บ item จริงจาก item_class
+        self.item = item
 
-        # ✅ cache ภาพ (โหลดครั้งเดียว)
+        # รูปภาพ
         self._base_image = None
-        self._scaled_image = None
-        self._rotation_quarters = 0  # นับจำนวนการหมุน 90°
+        self._rotation_quarters = 0  # หมุนทีละ 90°
 
+    # โหลดภาพจาก item_class
     def _ensure_base_image(self):
-        """โหลดรูปภาพจาก item_class (ครั้งเดียว)"""
-        if not (self.item and self.item.definition.image_path):
+        if not (self.item and getattr(self.item.definition, "image_path", None)):
             return
         if self._base_image is not None:
             return
         try:
-            path = self.item.definition.image_path.replace("\\", "/")  # แก้ path บน Windows
+            path = self.item.definition.image_path.replace("\\", "/")
             self._base_image = pygame.image.load(path).convert_alpha()
         except Exception as e:
             print("⚠️ โหลดรูปไม่สำเร็จ:", e)
             self._base_image = None
 
-    def _update_scaled_image(self):
-        """อัปเดตรูปหลังหมุนหรือขนาดเปลี่ยน"""
-        if self._base_image is None:
-            self._scaled_image = None
-            return
+    def _make_scaled_surface(self, img, pad=2, trim_alpha=5):
+        """
+        ย่อ/ขยายภาพแบบ 'contain' (เห็นภาพเต็มเสมอ ไม่ครอป ไม่ยืด)
+        + 'auto-trim' ขอบโปร่งใสออกก่อน เพื่อให้รูปใหญ่ที่สุดในกรอบ
+        """
+        # 1) หมุน
         angle = -90 * (self._rotation_quarters % 4)
-        rotated = pygame.transform.rotate(self._base_image, angle)
-        self._scaled_image = pygame.transform.scale(rotated, (self.rect.width, self.rect.height))
+        rotated = pygame.transform.rotate(img, angle)
 
+        # 2) ตัดขอบโปร่งใส (แก้ปัญหาไฟล์มีพื้นที่ว่างรอบ ๆ)
+        #    ปรับ trim_alpha สูงขึ้น (10-30) ถ้าขอบยังหนา
+        try:
+            trim_rect = rotated.get_bounding_rect(min_alpha=trim_alpha)
+            trimmed = rotated.subsurface(trim_rect).copy()
+        except Exception:
+            trimmed = rotated
+
+        # 3) พื้นที่ภายในของกรอบ (หัก padding)
+        rw, rh = self.rect.width, self.rect.height
+        inner_w = max(1, rw - pad * 2)
+        inner_h = max(1, rh - pad * 2)
+
+        # 4) contain = รักษาอัตราส่วนให้ “ด้านยาวสุด” แตะขอบ, มี letterbox ถ้าสัดส่วนไม่ตรง
+        iw, ih = trimmed.get_size()
+        img_ratio = iw / ih
+        box_ratio = inner_w / inner_h
+
+        if img_ratio > box_ratio:
+            # ภาพกว้างกว่า → fit ตามความกว้าง
+            new_w = inner_w
+            new_h = max(1, int(inner_w / img_ratio))
+        else:
+            # ภาพสูงกว่า/เท่ากัน → fit ตามความสูง
+            new_h = inner_h
+            new_w = max(1, int(inner_h * img_ratio))
+
+        scaled = pygame.transform.smoothscale(trimmed, (new_w, new_h))
+
+        # 5) จัดกลางในกรอบ
+        x = self.rect.x + pad + (inner_w - new_w) // 2
+        y = self.rect.y + pad + (inner_h - new_h) // 2
+        return scaled, (x, y)
+
+    # วาดภาพ
     def draw(self):
-        # ✅ แสดงภาพถ้ามี
         self._ensure_base_image()
         if self._base_image is not None:
-            if (self._scaled_image is None or
-                self._scaled_image.get_width() != self.rect.width or
-                self._scaled_image.get_height() != self.rect.height):
-                self._update_scaled_image()
-            SCREEN.blit(self._scaled_image, self.rect)
+            img, pos = self._make_scaled_surface(self._base_image, pad=2, trim_alpha=5)
+            SCREEN.blit(img, pos)
             pygame.draw.rect(SCREEN, BLACK, self.rect, 2)
         else:
             pygame.draw.rect(SCREEN, self.color, self.rect)
@@ -146,6 +176,7 @@ class Block:
             SCREEN.blit(font.render(f"x{qty}", True, BLACK),
                         (self.rect.right - 18, self.rect.bottom - 18))
 
+    # จัดการ event (ลาก/หมุน/ทิ้ง)
     def handle_event(self, event, all_blocks, keys):
         removed = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -165,7 +196,7 @@ class Block:
             self.rect.x = mx + self.offset[0]
             self.rect.y = my + self.offset[1]
 
-        # หมุนตอนลาก
+        # หมุนตอนลาก (R)
         if self.dragging:
             if keys[pygame.K_r] and not self.last_r_state:
                 self.rotate()
@@ -175,7 +206,6 @@ class Block:
         return removed
 
     def rotate(self):
-        """หมุน block + item_class และรูป"""
         if self.item and not self.item.can_rotate():
             return
         center = self.rect.center
@@ -183,10 +213,7 @@ class Block:
         self.rect.center = center
         if self.item:
             self.item.rotate()
-
         self._rotation_quarters = (self._rotation_quarters + 1) % 4
-        if self._base_image is not None:
-            self._update_scaled_image()
 
     def snap_to_nearest(self, all_blocks):
         ox1, oy1 = GRID_ORIGIN
@@ -261,13 +288,13 @@ while True:
             pygame.quit()
             sys.exit()
 
-        # ✅ คลิกปุ่ม Search → สุ่ม Item จาก item_class.py
+        # คลิกปุ่ม Search → สุ่ม Item จาก item_class.py
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if BOX_RECT.collidepoint(event.pos):
                 if any(is_item_in_spawn_zone(b) for b in blocks):
                     print("⚠️ ต้องย้าย item ใน spawn zone ออกก่อน!")
                 else:
-                    new_item = make_trial_item()  # 🧩 ใช้ Item จริง
+                    new_item = make_trial_item()
                     new_block = create_block_from_item(new_item)
                     blocks.append(new_block)
                     print(f"เพิ่ม item จาก item_class: {new_item}")
