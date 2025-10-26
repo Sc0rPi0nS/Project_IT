@@ -1,7 +1,6 @@
 '''Menu Interface'''
 import pygame
 import subprocess
-import json
 "from inventory_system import"
 "from item_class import"
 pygame.init()
