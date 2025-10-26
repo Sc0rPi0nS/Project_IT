@@ -107,6 +107,22 @@ RTX_DEF = ItemDef(
 def make_rtx_item(quantity: int = 1) -> Item:
     return Item(definition=RTX_DEF, quantity=quantity)
 
+# ====== ไอเทมตัวทดลอง 4: ยา (Medkit) ======
+MEDKIT_DEF = ItemDef(
+    id="medkit_basic",
+    name="Medkit",
+    size_w=1, size_h=1,
+    rotatable=True,
+    stackable=False,    # ไม่ stack กัน
+    weight=0.5,
+    value=250,
+    image_path="item\ยา.png"   # ✅ path ไปยังรูปยา
+)
+
+def make_medkit_item(quantity: int = 1) -> Item:
+    return Item(definition=MEDKIT_DEF, quantity=quantity)
+
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size

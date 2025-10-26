@@ -1,7 +1,7 @@
 import pygame
 import sys
 import random
-from item_class import Item, make_trial_item, item_pixel_size  # เชื่อมกับ item_class
+from item_class import Item, make_trial_item, item_pixel_size,make_medkit_item # เชื่อมกับ item_class
 
 # 👉 factory อื่นที่อยากสุ่ม (ถ้ามี)
 try:
@@ -215,9 +215,10 @@ def create_block_from_item(item: Item):
 # ------------------ DROP TABLE (แก้ง่าย ปลอดภัย) ------------------
 # ปรับเรทแค่ตรงนี้พอ! (ไม่ต้องรวมเป็น 100 ก็ได้)
 DROP_WEIGHTS = {
-    "Purified Water": 50,
-    "Battery":        30,
+    "Purified Water": 20,
+    "Battery":        20,
     "RTX GPU":        20,
+    "Medkit":         20,
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
@@ -225,6 +226,7 @@ FACTORIES = {
     "Purified Water": lambda: make_trial_item(1),
     "Battery":        (lambda: make_battery_item(1)) if callable(make_battery_item) else None,
     "RTX GPU":        (lambda: make_rtx_item(1))     if callable(make_rtx_item) else None,
+    "Medkit":         (lambda: make_medkit_item(1))  if callable(make_medkit_item) else None,
 }
 
 def build_drop_table():
