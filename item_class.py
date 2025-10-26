@@ -107,7 +107,6 @@ RTX_DEF = ItemDef(
 def make_rtx_item(quantity: int = 1) -> Item:
     return Item(definition=RTX_DEF, quantity=quantity)
 
-<<<<<<< HEAD
 # ====== ไอเทมตัวทดลอง 4: ยา (Medkit) ======
 MEDKIT_DEF = ItemDef(
     id="medkit_basic",
@@ -123,7 +122,7 @@ MEDKIT_DEF = ItemDef(
 def make_medkit_item(quantity: int = 1) -> Item:
     return Item(definition=MEDKIT_DEF, quantity=quantity)
 
-=======
+
 # ====== ไอเทมตัวทดลอง 4: can food ======
 CANFOOD_DEF = ItemDef(
     id="can_food",
@@ -140,7 +139,6 @@ CANFOOD_DEF = ItemDef(
 
 def make_canfood_item(quantity: int = 1) -> Item:
     return Item(definition=CANFOOD_DEF, quantity=quantity)
->>>>>>> e01076fe504391140695a071dcbac558acf03c68
 
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
