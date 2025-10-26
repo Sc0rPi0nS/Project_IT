@@ -12,7 +12,7 @@ volume = 1
 
 
 # header
-pygame.display.set_caption("Backpack")
+pygame.display.set_caption("The Scavanger")
 
 # color
 white = (255, 255, 255)
