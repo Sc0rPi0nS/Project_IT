@@ -39,11 +39,6 @@ small_font = pygame.font.SysFont("bytebounce", 50)
 bg_img = pygame.image.load("background/bg3.png").convert_alpha()
 bg_img = pygame.transform.scale(bg_img, (920, 750))
 
-# json
-with open("config.json", "w") as f:
-    json.dump({"volume": volume}, f)
-
-
 # สร้าง rect สำหรับปุ่ม
 
 start_rect = pygame.Rect(0, 0, 300, 100)
@@ -82,7 +77,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "menu":
             if start_rect.collidepoint(event.pos):
                 click_sound.play()
-                subprocess.Popen(["python", "inventory_system.py"])
+                subprocess.Popen(["python", "inventory_system.py", str(volume)])
                 running = False
 
             elif setting_rect.collidepoint(event.pos):
