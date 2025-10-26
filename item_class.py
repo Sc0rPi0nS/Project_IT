@@ -1,4 +1,3 @@
-# item_class.py
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Tuple
@@ -15,7 +14,7 @@ class ItemDef:
     max_stack: int = 1
     weight: float = 0.0
     value: int = 0
-    image_path: Optional[str] = None  # ยังไม่ใช้รูป (ปล่อย None ไปก่อน)
+    image_path: Optional[str] = None  # path ของภาพ
 
 # ====== อินสแตนซ์ไอเทมจริง ======
 @dataclass
@@ -60,8 +59,8 @@ class Item:
     def total_value(self) -> int:
         return self.definition.value * max(1, self.quantity)
 
-# ====== ไอเทมตัวทดลอง 1 ชิ้น ======
-# ตัวอย่าง: ขวดน้ำ 1x2 ช่อง หมุนได้ ไม่สแต็ก
+
+# ====== ไอเทมตัวทดลอง 1: ขวดน้ำ ======
 TRIAL_DEF = ItemDef(
     id="trial_water",
     name="Purified Water",
@@ -70,12 +69,30 @@ TRIAL_DEF = ItemDef(
     stackable=False,
     weight=1.0,
     value=120,
-    image_path = "Project_IT\item\น้ำสะอาด.png"
+    image_path="Project_IT/item/น้ำสะอาด.png"
 )
 
 def make_trial_item(quantity: int = 1) -> Item:
     return Item(definition=TRIAL_DEF, quantity=quantity)
 
-# helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE)
+
+# ====== ไอเทมตัวทดลอง 2: แบตเตอรี่ ======
+BATTERY_DEF = ItemDef(
+    id="battery_aa",
+    name="Battery",
+    size_w=1, size_h=1,
+    rotatable=True,
+    stackable=True,
+    max_stack=4,
+    weight=0.3,
+    value=80,
+    image_path="Project_IT\item\เเบตเตอรี่.png"
+)
+
+def make_battery_item(quantity: int = 1) -> Item:
+    return Item(definition=BATTERY_DEF, quantity=quantity)
+
+
+# ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size
