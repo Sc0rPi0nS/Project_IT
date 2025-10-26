@@ -136,7 +136,7 @@ while running:
 
         # แสดง Volume ตรงกลาง
         setting_font = sys_font.render("SETTING", True, text_press)
-        vol_text = small_font.render(f"Volume: {int(volume*100)}%", True, text_press)
+        vol_text = small_font.render(f"Volume: {int(round(volume*100))}%", True, text_press)
         screen.blit(vol_text,(350,390))
 
                 # ปุ่ม + / -
