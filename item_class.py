@@ -70,7 +70,7 @@ TRIAL_DEF = ItemDef(
     stackable=False,
     weight=1.0,
     value=120,
-    image_path = "Project_IT\item\น้ำสะอาด.png"
+    image_path = "item\น้ำสะอาด.png"
 )
 
 def make_trial_item(quantity: int = 1) -> Item:
