@@ -14,6 +14,12 @@ try:
 except Exception:
     make_rtx_item = None
 
+try:
+    from item_class import make_canfood_item
+except Exception:
+    make_canfood_item = None
+
+
 pygame.init()
 
 SCREEN = pygame.display.set_mode((920, 750))
@@ -218,7 +224,11 @@ DROP_WEIGHTS = {
     "Purified Water": 20,
     "Battery":        20,
     "RTX GPU":        20,
+<<<<<<< HEAD
     "Medkit":         20,
+=======
+    "Canned Food":    80,
+>>>>>>> e01076fe504391140695a071dcbac558acf03c68
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
@@ -226,7 +236,11 @@ FACTORIES = {
     "Purified Water": lambda: make_trial_item(1),
     "Battery":        (lambda: make_battery_item(1)) if callable(make_battery_item) else None,
     "RTX GPU":        (lambda: make_rtx_item(1))     if callable(make_rtx_item) else None,
+<<<<<<< HEAD
     "Medkit":         (lambda: make_medkit_item(1))  if callable(make_medkit_item) else None,
+=======
+    "Canned Food":    (lambda: make_canfood_item(1)) if callable(make_canfood_item) else None,
+>>>>>>> e01076fe504391140695a071dcbac558acf03c68
 }
 
 def build_drop_table():
