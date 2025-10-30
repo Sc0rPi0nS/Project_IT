@@ -1,8 +1,10 @@
 import pygame
 import sys
 import random
+# เชื่อมกับ item_class
 from item_class import Item, make_trial_item, item_pixel_size\
-    , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item# เชื่อมกับ item_class
+    , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item,make_dirwater_item,make_cucumber_item\
+    , make_Flashlight_item, make_Bandage_item, make_DirtMeat_item
 
 pygame.init()
 
@@ -209,7 +211,12 @@ DROP_WEIGHTS = {
     "Battery":        20,
     "RTX GPU":        20,
     "Medkit":         20,
-    "Canned Food":    80,
+    "Canned Food":    20,
+    "Dirty water":    20,
+    "Cucamber":      20,
+    "Flashlight":     20,
+    "Bandage":        20,
+    "Dirt Meat": 20
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
@@ -219,6 +226,11 @@ FACTORIES = {
     "RTX GPU":        (lambda: make_rtx_item(1))     if callable(make_rtx_item) else None,
     "Medkit":         (lambda: make_medkit_item(1))  if callable(make_medkit_item) else None,
     "Canned Food":    (lambda: make_canfood_item(1)) if callable(make_canfood_item) else None,
+    "Dirty water":    (lambda: make_dirwater_item(1)) if callable(make_dirwater_item) else None,
+    "Cucamber":      (lambda: make_cucumber_item(1)) if callable(make_cucumber_item) else None,
+    "Flashlight":     (lambda: make_Flashlight_item(1)) if callable(make_Flashlight_item) else None,
+    "Bandage":        (lambda: make_Bandage_item(1)) if callable(make_Bandage_item) else None,
+    "Dirt Meat":      (lambda: make_DirtMeat_item(1)) if callable(make_DirtMeat_item) else None
 }
 
 def build_drop_table():

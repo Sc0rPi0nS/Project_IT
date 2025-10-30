@@ -74,8 +74,6 @@ TRIAL_DEF = ItemDef(
 
 def make_trial_item(quantity: int = 1) -> Item:
     return Item(definition=TRIAL_DEF, quantity=quantity)
-
-
 # ====== ไอเทมตัวทดลอง 2: แบตเตอรี่ ======
 BATTERY_DEF = ItemDef(
     id="battery_aa",
@@ -139,10 +137,86 @@ CANFOOD_DEF = ItemDef(
 def make_canfood_item(quantity: int = 1) -> Item:
     return Item(definition=CANFOOD_DEF, quantity=quantity)
 
+DIRWATER_DEF = ItemDef(
+    id="dirty water",
+    name="Dirty Water",
+    size_w=1,
+    size_h=2,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=40,
+    image_path="item\น้ำเน่า.png"
+)
+
+def make_dirwater_item(quantity: int = 1) -> Item:
+    return Item(definition=DIRWATER_DEF, quantity=quantity)
+
+CUCUMBER_DEF = ItemDef(
+    id="cucumber",
+    name="Cucumber",
+    size_w=1,
+    size_h=2,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=160,
+    image_path="item\เเตงกวาเดอง.png"
+)
+
+def make_cucumber_item(quantity: int = 1) -> Item:
+    return Item(definition=CUCUMBER_DEF, quantity=quantity)
+
+FLASHLIGT_DEF = ItemDef(
+    id="Flashlight",
+    name="Flashlight",
+    size_w=1,
+    size_h=3,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="item\ไฟฉาย.png"
+)
+
+def make_Flashlight_item(quantity: int = 1) -> Item:
+    return Item(definition=FLASHLIGT_DEF, quantity=quantity)
+
+BANDAGE_DEF = ItemDef(
+    id="Bandage",
+    name="Bandage",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="item\ผ้าพันเเผล.png"
+)
+
+def make_Bandage_item(quantity: int = 1) -> Item:
+    return Item(definition=BANDAGE_DEF, quantity=quantity)
+
+DIRTMEAT_DEF = ItemDef(
+    id="DirtMeat",
+    name="Dirt Meat",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="item\เนื้อเน่า.png"
+)
+
+def make_DirtMeat_item(quantity: int = 1) -> Item:
+    return Item(definition=DIRTMEAT_DEF, quantity=quantity)
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size
-
-# Git ควายๆ 
-#Hello PSCP
-    
