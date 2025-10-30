@@ -240,7 +240,7 @@ DROP_WEIGHTS = {
     "Puma" : 3,
     "Radio": 15,
     "Vans" : 3,
-    "IT" : 0.1
+    "IT" : 1
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
