@@ -1,9 +1,10 @@
 import pygame
 import sys
 import random
-# เชื่อมกับ item_class
+
+# ---------- item_class ----------
 from item_class import Item, make_trial_item, item_pixel_size\
-    , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item,make_dirwater_item,make_cucumber_item\
+    , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item, make_dirwater_item, make_cucumber_item\
     , make_Flashlight_item, make_Bandage_item, make_DirtMeat_item, make_Antivirus_item, make_Baseball_item, make_Binocular_item\
     , make_Bread_item, make_Compass_item, make_EnergyBar_item, make_Glasses_item, make_Keyboard_item, make_Lighter_item\
     , make_Mouse_item, make_Converse_item, make_Jordan_item, make_Mac_item, make_Mask_item, make_Msi_item, make_Opthus_item\
@@ -14,36 +15,43 @@ pygame.init()
 SCREEN = pygame.display.set_mode((920, 750))
 pygame.display.set_caption("Dual Inventory System (No Stack Overlay)")
 
-GRID_SIZE = 60
+# ---------------- BACKGROUND ----------------
+BACKGROUND_PATH = r"background\inventory backg.png"
+try:
+    _bg = pygame.image.load(BACKGROUND_PATH).convert()
+    BACKGROUND = pygame.transform.smoothscale(_bg, (920, 750))
+except Exception as e:
+    print("⚠️ โหลดภาพพื้นหลังไม่สำเร็จ:", e)
+    BACKGROUND = None
+# -------------------------------------------
+
+# ---------- Grid / Layout (calibrated) ----------
+GRID_SIZE = 65
 ROWS, COLS = 5, 5
-MARGIN_TOP = 140
 
 WHITE = (255, 255, 255)
-GRAY = (200, 200, 200)
+GRAY  = (200, 200, 200)
 BLACK = (0, 0, 0)
 ITEM_COLORS = [(255, 80, 80), (80, 200, 120), (80, 120, 255), (255, 220, 100)]
 
-# ---------- Layout ----------
-TOTAL_GRID_WIDTH = COLS * GRID_SIZE
+TOTAL_GRID_WIDTH  = COLS * GRID_SIZE
 TOTAL_GRID_HEIGHT = ROWS * GRID_SIZE
-GAP_X = 100
-start_x = (920 - (TOTAL_GRID_WIDTH + GAP_X + GRID_SIZE * 2)) // 2
-GRID_ORIGIN = (start_x, MARGIN_TOP)
+
+# กริดใหญ่ซ้าย (Inventory 5x5)
+GRID_ORIGIN = (153, 286)
 INVENTORY_RECT = pygame.Rect(GRID_ORIGIN[0], GRID_ORIGIN[1], TOTAL_GRID_WIDTH, TOTAL_GRID_HEIGHT)
 
+# ปุ่ม Search (2x1 ช่อง)
 BOX_WIDTH, BOX_HEIGHT = GRID_SIZE * 2, GRID_SIZE
-BOX_X = GRID_ORIGIN[0] + TOTAL_GRID_WIDTH + GAP_X
-BOX_Y = MARGIN_TOP
-BOX_RECT = pygame.Rect(BOX_X, BOX_Y, BOX_WIDTH, BOX_HEIGHT)
+BOX_RECT = pygame.Rect(579, 287, BOX_WIDTH, BOX_HEIGHT)
 
+# กริด Spawn 3x3 (กระจกขวา)
 SPAWN_ROWS, SPAWN_COLS = 3, 3
-SPAWN_WIDTH, SPAWN_HEIGHT = SPAWN_COLS * GRID_SIZE, SPAWN_ROWS * GRID_SIZE
-SPAWN_X = BOX_X + BOX_WIDTH // 2 - SPAWN_WIDTH // 2
-SPAWN_Y = BOX_RECT.bottom + 20
-SPAWN_ORIGIN = (SPAWN_X, SPAWN_Y)
-SPAWN_RECT = pygame.Rect(SPAWN_X, SPAWN_Y, SPAWN_WIDTH, SPAWN_HEIGHT)
+SPAWN_ORIGIN = (547, 373)
+SPAWN_RECT = pygame.Rect(SPAWN_ORIGIN[0], SPAWN_ORIGIN[1], SPAWN_COLS * GRID_SIZE, SPAWN_ROWS * GRID_SIZE)
 
-TRASH_RECT = pygame.Rect(SPAWN_RECT.centerx - GRID_SIZE, SPAWN_RECT.bottom + 30, GRID_SIZE * 2, GRID_SIZE)
+# ปุ่ม/พื้นที่ TRASH
+TRASH_RECT = pygame.Rect(578, 597, GRID_SIZE * 2, GRID_SIZE)
 
 # ------------------ ฟังก์ชันวาด ------------------
 def draw_grid(origin):
@@ -78,9 +86,8 @@ def draw_item_box():
     pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
     pygame.draw.rect(SCREEN, BLACK, BOX_RECT, 3)
     font = pygame.font.SysFont(None, 32)
-    SCREEN.blit(font.render("Search", True, BLACK),
-                font.render("Search", True, BLACK).get_rect(center=BOX_RECT.center))
-
+    label = font.render("Search", True, BLACK)
+    SCREEN.blit(label, label.get_rect(center=BOX_RECT.center))
 
 # ------------------ คลาส Block ------------------
 class Block:
@@ -136,7 +143,6 @@ class Block:
         else:
             pygame.draw.rect(SCREEN, self.color, self.rect)
         pygame.draw.rect(SCREEN, BLACK, self.rect, 2)
-        # ❌ ไม่มีเลขคูณ x1/xN อีกต่อไป
 
     def handle_event(self, event, all_blocks, keys):
         removed = False
@@ -144,7 +150,7 @@ class Block:
             self.dragging = True
             mx, my = event.pos
             self.offset = (self.rect.x - mx, self.rect.y - my)
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+        elif event.type == pygame.MOUSEBUTTON_UP and event.button == 1:
             if self.dragging:
                 self.dragging = False
                 if TRASH_RECT.colliderect(self.rect):
@@ -177,13 +183,16 @@ class Block:
         ox1, oy1 = GRID_ORIGIN
         ox2, oy2 = SPAWN_ORIGIN
         cx, cy = self.rect.center
-        grid_center = (ox1 + COLS * GRID_SIZE / 2, oy1 + ROWS * GRID_SIZE / 2)
-        spawn_center = (ox2 + SPAWN_COLS * GRID_SIZE / 2, oy2 + SPAWN_ROWS * GRID_SIZE / 2)
-        dist_grid = abs(cx - grid_center[0]) + abs(cy - grid_center[1])
+        grid_center  = (ox1 + COLS * GRID_SIZE / 2,  oy1 + ROWS * GRID_SIZE / 2)
+        spawn_center = (ox2 + 3    * GRID_SIZE / 2,  oy2 + 3    * GRID_SIZE / 2)
+        dist_grid  = abs(cx - grid_center[0])  + abs(cy - grid_center[1])
         dist_spawn = abs(cx - spawn_center[0]) + abs(cy - spawn_center[1])
-        ox, oy = (ox1, oy1) if dist_grid < dist_spawn else (ox2, oy2)
-        cols = COLS if dist_grid < dist_spawn else SPAWN_COLS
-        rows = ROWS if dist_grid < dist_spawn else SPAWN_ROWS
+
+        if dist_grid < dist_spawn:
+            ox, oy, cols, rows = ox1, oy1, COLS, ROWS
+        else:
+            ox, oy, cols, rows = ox2, oy2, 3, 3
+
         col = int((self.rect.centerx - ox) // GRID_SIZE)
         row = int((self.rect.centery - oy) // GRID_SIZE)
         col = max(0, min(col, cols - (self.rect.width // GRID_SIZE)))
@@ -197,7 +206,6 @@ class Block:
             if dist_grid >= dist_spawn:
                 self.spawn_point = (self.rect.x, self.rect.y)
 
-
 # ------------------ Helper ------------------
 def is_item_in_spawn_zone(block): return SPAWN_RECT.colliderect(block.rect)
 def is_item_in_inventory_zone(block): return INVENTORY_RECT.colliderect(block.rect)
@@ -207,43 +215,16 @@ def create_block_from_item(item: Item):
     sx, sy = SPAWN_RECT.centerx - w // 2, SPAWN_RECT.centery - h // 2
     return Block(sx, sy, w, h, random.choice(ITEM_COLORS), item=item)
 
-# ------------------DROP TABLE------------------
-# ปรับเรทแค่ตรงนี้พอ! (ไม่ต้องรวมเป็น 100 ก็ได้)
+# ------------------ DROP TABLE ------------------
 DROP_WEIGHTS = {
-    "Purified Water": 10,
-    "Battery":        15,
-    "RTX GPU":        1,
-    "Medkit":         10,
-    "Canned Food":    10,
-    "Dirty water":    20,
-    "Cucamber":      25,
-    "Flashlight":     15,
-    "Bandage":        10,
-    "Dirt Meat": 20,
-    "Antivirus": 10,
-    "Baseball Bat": 15,
-    "Binoculars": 20,
-    "Bread": 25,
-    "Compass": 10,
-    "Energy Bar": 10,
-    "Glasses": 15,
-    "Keyboard": 10,
-    "Lighter": 15,
-    "Mouse": 15,
-    "Converse": 5,
-    "Jordan": 3,
-    "Mac": 3,
-    "Mask": 10,
-    "MSI": 3,
-    "Opthus": 3,
-    "Panda": 3,
-    "Puma" : 3,
-    "Radio": 15,
-    "Vans" : 3,
-    "IT" : 1
+    "Purified Water": 10, "Battery": 15, "RTX GPU": 1, "Medkit": 10, "Canned Food": 10,
+    "Dirty water": 20, "Cucamber": 25, "Flashlight": 15, "Bandage": 10, "Dirt Meat": 20,
+    "Antivirus": 10, "Baseball Bat": 15, "Binoculars": 20, "Bread": 25, "Compass": 10,
+    "Energy Bar": 10, "Glasses": 15, "Keyboard": 10, "Lighter": 15, "Mouse": 15,
+    "Converse": 5, "Jordan": 3, "Mac": 3, "Mask": 10, "MSI": 3, "Opthus": 3,
+    "Panda": 3, "Puma": 3, "Radio": 15, "Vans": 3, "IT": 1
 }
 
-# map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
 FACTORIES = {
     "Purified Water": lambda: make_trial_item(1),
     "Battery":        (lambda: make_battery_item(1)) if callable(make_battery_item) else None,
@@ -251,7 +232,7 @@ FACTORIES = {
     "Medkit":         (lambda: make_medkit_item(1))  if callable(make_medkit_item) else None,
     "Canned Food":    (lambda: make_canfood_item(1)) if callable(make_canfood_item) else None,
     "Dirty water":    (lambda: make_dirwater_item(1)) if callable(make_dirwater_item) else None,
-    "Cucamber":      (lambda: make_cucumber_item(1)) if callable(make_cucumber_item) else None,
+    "Cucamber":       (lambda: make_cucumber_item(1)) if callable(make_cucumber_item) else None,
     "Flashlight":     (lambda: make_Flashlight_item(1)) if callable(make_Flashlight_item) else None,
     "Bandage":        (lambda: make_Bandage_item(1)) if callable(make_Bandage_item) else None,
     "Dirt Meat":      (lambda: make_DirtMeat_item(1)) if callable(make_DirtMeat_item) else None,
@@ -275,7 +256,7 @@ FACTORIES = {
     "Puma":           (lambda: make_Puma_item(1)) if callable(make_Puma_item) else None,
     "Radio":          (lambda: make_Radio_item(1)) if callable(make_Radio_item) else None,
     "Vans":           (lambda: make_Vans_item(1)) if callable(make_Vans_item) else None,
-    "IT":           (lambda: make_IT_item(1)) if callable(make_IT_item) else None
+    "IT":             (lambda: make_IT_item(1)) if callable(make_IT_item) else None
 }
 
 def build_drop_table():
@@ -303,7 +284,6 @@ def show_drop_rates():
 def roll_item_from_drop_table():
     entries = [e for e in DROP_TABLE if e.get("weight", 0) > 0]
     if not entries:
-        # กันพังถ้าเผลอลบหมด
         return make_trial_item(1)
     total = sum(e["weight"] for e in entries)
     r = random.uniform(0, total)
@@ -319,7 +299,11 @@ blocks, clock = [], pygame.time.Clock()
 show_drop_rates()
 
 while True:
-    SCREEN.fill(WHITE)
+    if BACKGROUND:
+        SCREEN.blit(BACKGROUND, (0, 0))
+    else:
+        SCREEN.fill(WHITE)
+
     draw_grid(GRID_ORIGIN)
     draw_item_box()
     draw_spawn_zone()
