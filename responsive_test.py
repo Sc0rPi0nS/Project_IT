@@ -1,6 +1,10 @@
 import pygame
 import sys
 import random
+import subprocess
+import json
+import os
+
 from item_class import Item, make_trial_item, item_pixel_size, \
     make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item
 # responsive added and close bottom added
@@ -12,20 +16,59 @@ SCREEN_WIDTH, SCREEN_HEIGHT = info.current_w, info.current_h
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Dual Inventory System (Responsive)")
 
+#json
+LEADERBOARD_FILE = "leaderboard.json"
+# ---------- โหลด leaderboard ----------
+if os.path.exists(LEADERBOARD_FILE):
+    with open(LEADERBOARD_FILE, "r") as f:
+        try:
+            leaderboard = json.load(f)
+        except json.JSONDecodeError:
+            leaderboard = []
+else:
+    leaderboard = []
+
+#playername 
+if len(sys.argv) > 1: 
+    player_name = sys.argv[1] 
+else: 
+    player_name = "Guest"
+
 # ---------- Base Colors ----------
 WHITE = (255, 255, 255)
 GRAY = (200, 200, 200)
 BLACK = (0, 0, 0)
 RED = (220, 50, 50)
 DARK_RED = (150, 0, 0)
+green = (0, 255, 0)
+frame = (96, 62, 62)
+brown = (218, 169, 107)
+text_press = (145, 92, 67)
 ITEM_COLORS = [(255, 80, 80), (80, 200, 120), (80, 120, 255), (255, 220, 100)]
+
+# ---------- Font ----------
+timer_font = pygame.font.SysFont("bytebounce", 120)  # 60 px
+time_up = False
+score_added = False
+small_font = pygame.font.SysFont("bytebounce", 60)
+
+#image
+bgimg = pygame.image.load("background/Inventory backg1.png").convert_alpha()
+bgimg = pygame.transform.scale(bgimg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+happy_img = pygame.image.load("background/Victory.png").convert_alpha()
+happy_img = pygame.transform.scale(happy_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# ---------- Timer ----------
+countdown_time = 30  # วินาที (2 นาที)
+start_ticks = pygame.time.get_ticks()
+
 
 # ---------- Grid & Layout (responsive ratios) ----------
 def calc_layout():
     global GRID_SIZE, ROWS, COLS, MARGIN_TOP, GAP_X
     global TOTAL_GRID_WIDTH, TOTAL_GRID_HEIGHT
     global GRID_ORIGIN, INVENTORY_RECT, BOX_RECT, SPAWN_RECT, TRASH_RECT
-    global SPAWN_ORIGIN, BOX_X, BOX_Y, CLOSE_BTN_RECT
+    global SPAWN_ORIGIN, BOX_X, BOX_Y
 
     ROWS, COLS = 5, 5
     GRID_SIZE = int(SCREEN_HEIGHT * 0.09)
@@ -58,22 +101,64 @@ def calc_layout():
     )
 
     # ปุ่มปิดเกม (Responsive)
-    btn_size = int(SCREEN_WIDTH * 0.04)
-    CLOSE_BTN_RECT = pygame.Rect(SCREEN_WIDTH - btn_size - 20, 20, btn_size, btn_size)
+    menu_radius = int(min(SCREEN_WIDTH, SCREEN_HEIGHT) * 0.035 * 1.4)
+    menu_x = SCREEN_WIDTH - menu_radius - 20
+    menu_y = menu_radius + 20
+    global MENU_BTN_CENTER, MENU_BTN_RADIUS
+    MENU_BTN_CENTER = (menu_x, menu_y)
+    MENU_BTN_RADIUS = menu_radius
 
 calc_layout()
+# ---------- ฟังก์ชันเพิ่มคะแนน ----------
+def add_score(player_name,score):
+    global leaderboard
+    leaderboard.append({"name": player_name,"score": score})
+    leaderboard.sort(key=lambda x: x["score"], reverse=True)  # เรียงจากสูงไปต่ำ
+    # เก็บแค่ 10 อันดับล่าสุด
+    if len(leaderboard) > 10:
+        leaderboard = leaderboard[:10]
+    # บันทึกลงไฟล์
+    with open(LEADERBOARD_FILE, "w") as f:
+        json.dump(leaderboard, f, indent=4)
+
+# ---------- ฟังก์ชันแสดง leaderboard ----------
+def show_leaderboard(surface, font, start_x, start_y):
+    y = start_y
+    for idx, entry in enumerate(leaderboard):
+        text = font.render(f"{idx+1}. {entry['score']}", True, (0,0,0))
+        surface.blit(text, (start_x, y))
+        y += text.get_height() + 5
 
 # ---------- Drawing ----------
-def draw_close_button():
+play_again_rect = pygame.Rect(0, 0, 250, 70)
+play_again_rect.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 150)  # วางใต้ข้อความ Time's Up
+
+def draw_play_again_button(surface):
+    pygame.draw.rect(surface, (100, 200, 255), play_again_rect, border_radius=15)
+    pygame.draw.rect(surface, BLACK, play_again_rect, 3, border_radius=15)
+    font = pygame.font.SysFont("bytebounce", 40)
+    text_surface = font.render("Play Again", True, BLACK)
+    surface.blit(text_surface, text_surface.get_rect(center=play_again_rect.center))
+def draw_menu_button(surface, center, radius):
     mouse_pos = pygame.mouse.get_pos()
-    color = DARK_RED if CLOSE_BTN_RECT.collidepoint(mouse_pos) else RED
-    pygame.draw.rect(SCREEN, color, CLOSE_BTN_RECT, border_radius=6)
-    pygame.draw.line(SCREEN, WHITE,
-                     (CLOSE_BTN_RECT.left + 8, CLOSE_BTN_RECT.top + 8),
-                     (CLOSE_BTN_RECT.right - 8, CLOSE_BTN_RECT.bottom - 8), 3)
-    pygame.draw.line(SCREEN, WHITE,
-                     (CLOSE_BTN_RECT.left + 8, CLOSE_BTN_RECT.bottom - 8),
-                     (CLOSE_BTN_RECT.right - 8, CLOSE_BTN_RECT.top + 8), 3)
+    cx, cy = center
+    dx = mouse_pos[0] - cx
+    dy = mouse_pos[1] - cy
+    hovering = dx*dx + dy*dy <= radius*radius
+    # เปลี่ยนสีถ้า hover
+    fill_color = WHITE if hovering else brown
+    # วงกลมหลัก
+    pygame.draw.circle(surface, fill_color, center, radius)
+    # ขอบวงกลม
+    pygame.draw.circle(surface, frame, center, radius, 4)
+
+    # วาดขีดสามขีด
+    cx, cy = center
+    for i in range(-1, 2):  # -1, 0, 1
+        y = cy + i * 15
+        rect = pygame.Rect(0, 0, 45, 5)
+        rect.center = (cx, y)
+        pygame.draw.rect(surface, frame, rect, border_radius=4)
 
 def draw_grid(origin):
     ox, oy = origin
@@ -82,8 +167,8 @@ def draw_grid(origin):
             pygame.draw.rect(SCREEN, GRAY, (ox + c * GRID_SIZE, oy + r * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
 
 def draw_inventory_value(total_value):
-    font = pygame.font.SysFont(None, int(GRID_SIZE * 0.4))
-    text_surface = font.render(f"Value : {total_value}", True, BLACK)
+    font = pygame.font.SysFont("bytebounce", int(GRID_SIZE * 0.6))
+    text_surface = font.render(f"VALUE : {total_value}", True, BLACK)
     text_x = INVENTORY_RECT.centerx - text_surface.get_width() // 2
     text_y = INVENTORY_RECT.bottom + int(GRID_SIZE * 0.3)
     SCREEN.blit(text_surface, (text_x, text_y))
@@ -100,15 +185,15 @@ def draw_spawn_zone():
 def draw_trash():
     pygame.draw.rect(SCREEN, (240, 240, 240), TRASH_RECT)
     pygame.draw.rect(SCREEN, BLACK, TRASH_RECT, 3)
-    font = pygame.font.SysFont(None, int(GRID_SIZE * 0.4))
+    font = pygame.font.SysFont("bytebounce", int(GRID_SIZE * 0.6))
     text_surface = font.render("TRASH", True, BLACK)
     SCREEN.blit(text_surface, text_surface.get_rect(center=TRASH_RECT.center))
 
 def draw_item_box():
     pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
     pygame.draw.rect(SCREEN, BLACK, BOX_RECT, 3)
-    font = pygame.font.SysFont(None, int(GRID_SIZE * 0.5))
-    text_surface = font.render("Search", True, BLACK)
+    font = pygame.font.SysFont("bytebounce", int(GRID_SIZE * 0.6))
+    text_surface = font.render("SEARCH", True, BLACK)
     SCREEN.blit(text_surface, text_surface.get_rect(center=BOX_RECT.center))
 
 # ---------- Class ----------
@@ -276,16 +361,67 @@ def roll_item_from_drop_table():
 blocks, clock = [], pygame.time.Clock()
 
 while True:
-    SCREEN.fill(WHITE)
-    draw_grid(GRID_ORIGIN)
-    draw_item_box()
-    draw_spawn_zone()
-    draw_trash()
-    draw_close_button()  # วาดปุ่มปิดเกม
-    for b in blocks:
-        b.draw()
-    draw_inventory_value(calc_inventory_total_value(blocks))
+    # ---------- Timer Update ----------
+    elapsed_ms = pygame.time.get_ticks() - start_ticks
+    elapsed_sec = elapsed_ms // 1000
+    remaining = max(0, countdown_time - elapsed_sec)
+    if remaining == 0:
+        time_up = True
+    if not time_up:
+        SCREEN.blit(bgimg,(0,0))
+        draw_grid(GRID_ORIGIN)
+        draw_item_box()
+        draw_spawn_zone()
+        draw_trash()
+        draw_menu_button(SCREEN, MENU_BTN_CENTER, MENU_BTN_RADIUS)
+        for b in blocks:
+            b.draw()
+        draw_inventory_value(calc_inventory_total_value(blocks))
 
+        #time text
+        minutes = remaining // 60
+        seconds = remaining % 60
+        timer_color = RED if remaining <= 10 else BLACK  # แดงเมื่อเหลือ 10 วินาที
+        timer_text = timer_font.render(f"{minutes:02d}:{seconds:02d}", True, timer_color)
+        timer_x = SCREEN_WIDTH // 2 - timer_text.get_width() // 2
+        timer_y = 20  # 20px จากขอบบน
+            # วาดกรอบสี่เหลี่ยมล้อมรอบ
+        padding = 10
+        timer_rect = pygame.Rect(
+            timer_x - padding,
+            timer_y - padding,
+            timer_text.get_width() + padding*2,
+            timer_text.get_height() + padding*2
+        )
+        pygame.draw.rect(SCREEN, WHITE, timer_rect,border_radius=15)       # กรอบพื้นหลังสีขาว
+        pygame.draw.rect(SCREEN, BLACK, timer_rect, 3,border_radius=15)    # ขอบสีดำหนา 3
+        SCREEN.blit(timer_text, (timer_x, timer_y))
+         # --- หน้าจอ Time's Up --- 
+    else:
+        SCREEN.blit(happy_img, (0,0)) 
+        text_surface = timer_font.render("Time's Up!", True, RED) 
+        rect = text_surface.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//6)) 
+        pygame.draw.rect(SCREEN, WHITE, rect.inflate(40, 20), border_radius=15) 
+        pygame.draw.rect(SCREEN, BLACK, rect.inflate(40, 20), 4, border_radius=15) 
+        SCREEN.blit(text_surface, rect) 
+        if not score_added: 
+            score = calc_inventory_total_value(blocks) 
+            add_score(player_name,score) 
+            score_added = True 
+            # แสดง leaderboard 
+        leaderboard_width = 700 
+        leaderboard_height = 500 
+        leaderboard_x = SCREEN_WIDTH//2 - leaderboard_width//2 
+        leaderboard_y = SCREEN_HEIGHT//2 - leaderboard_height//2 
+        leaderboard_rect = pygame.Rect(leaderboard_x, leaderboard_y, leaderboard_width, leaderboard_height) 
+        pygame.draw.rect(SCREEN, WHITE, leaderboard_rect, border_radius=10) 
+        pygame.draw.rect(SCREEN, BLACK, leaderboard_rect, 3, border_radius=10) 
+        show_leaderboard(SCREEN, small_font, leaderboard_x+20, leaderboard_y+20)
+
+        #Play again
+        play_again_rect.center = (SCREEN_WIDTH//2, SCREEN_HEIGHT*5//6)  # อยู่ล่างสุด
+        draw_play_again_button(SCREEN)
+    # ---------- Event Handling ----------
     keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -298,7 +434,11 @@ while True:
             calc_layout()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                if CLOSE_BTN_RECT.collidepoint(event.pos):  # คลิกปุ่มปิด
+                mx, my = event.pos
+                dx = mx - MENU_BTN_CENTER[0]
+                dy = my - MENU_BTN_CENTER[1]
+                if dx*dx + dy*dy <= MENU_BTN_RADIUS*MENU_BTN_RADIUS:
+                    subprocess.Popen(["python", "main.py"])
                     pygame.quit(); sys.exit()
                 elif BOX_RECT.collidepoint(event.pos):
                     if any(is_item_in_spawn_zone(b) for b in blocks):
@@ -307,6 +447,12 @@ while True:
                         new_item = roll_item_from_drop_table()
                         new_block = create_block_from_item(new_item)
                         blocks.append(new_block)
+                elif time_up and play_again_rect.collidepoint(event.pos):
+                    # รีเซ็ตเกม
+                    blocks.clear()
+                    start_ticks = pygame.time.get_ticks()
+                    time_up = False
+                    score_added = False
 
         for b in list(blocks):
             if b.handle_event(event, blocks, keys):
