@@ -8,7 +8,7 @@ pygame.init()
 #state
 state = "menu"
 volume = 1
-
+player_name = "Chotipat"
 
 # header
 pygame.display.set_caption("The Scavanger")
@@ -28,15 +28,15 @@ click_sound = pygame.mixer.Sound("sound/click-sound.mp3")
 click_sound.set_volume(1)
 
 # resolution
-screen = pygame.display.set_mode((920, 750))
+SCREEN = pygame.display.set_mode((920,750), pygame.RESIZABLE)
 
 # font
 sys_font = pygame.font.SysFont("bytebounce", 100)
 small_font = pygame.font.SysFont("bytebounce", 50)
 
 # background
-bg_img = pygame.image.load("background/bg3.png").convert_alpha()
-bg_img = pygame.transform.scale(bg_img, (920, 750))
+bg_img = pygame.image.load("background/bg2.png").convert_alpha()
+bg_img = pygame.transform.scale(bg_img, (920,750))
 
 # สร้าง rect สำหรับปุ่ม
 
@@ -76,7 +76,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN and state == "menu":
             if start_rect.collidepoint(event.pos):
                 click_sound.play()
-                subprocess.Popen(["python", "inventory_system.py", str(volume)])
+                subprocess.Popen(["python", "inventory_system.py", str(volume),player_name])
                 running = False
 
             elif setting_rect.collidepoint(event.pos):
@@ -105,10 +105,27 @@ while running:
             if back_rect.collidepoint(event.pos):
                 state = "menu"
 
-    screen.blit(bg_img, (0, 0))
+    SCREEN.blit(bg_img, (0, 0))
     mouse_pos = pygame.mouse.get_pos()
 
     if state == "menu":
+            # ---------- วาดหัวข้อเกมตรงกลางบน พร้อม outline ----------
+            title_font = pygame.font.SysFont("bytebounce", 120)
+            title_text = title_font.render("THE SCAVANGER", True, brown)
+            title_rect = title_text.get_rect(center=(SCREEN.get_width() // 2, 100))  # ตรงกลางบน
+
+            # วาด outline รอบข้อความ
+            outline_color = frame  # สีขอบ
+            outline_thickness = 3
+            for dx in [-outline_thickness, 0, outline_thickness]:
+                for dy in [-outline_thickness, 0, outline_thickness]:
+                    if dx != 0 or dy != 0:  # ข้ามตำแหน่งตรงกลาง
+                        outline_text = title_font.render("THE SCAVANGER", True, outline_color)
+                        SCREEN.blit(outline_text, title_rect.move(dx, dy))
+
+            # วาดข้อความ
+            SCREEN.blit(title_text, title_rect)
+
             start_color = white if start_rect.collidepoint(mouse_pos) else text_press
             setting_color = white if setting_rect.collidepoint(mouse_pos) else text_press
             credits_color = white if credits_rect.collidepoint(mouse_pos) else text_press
@@ -125,26 +142,26 @@ while running:
             setting_box.inflate_ip(padding, padding)
             credits_box.inflate_ip(padding, padding)
 
-            pygame.draw.rect(screen, brown, start_box, border_radius=20)
-            pygame.draw.rect(screen, frame, start_box, 5, border_radius=20)
-            pygame.draw.rect(screen, brown, setting_box, border_radius=20)
-            pygame.draw.rect(screen, frame, setting_box, 5, border_radius=20)
-            pygame.draw.rect(screen, brown, credits_box, border_radius=20)
-            pygame.draw.rect(screen, frame, credits_box, 5, border_radius=20)
-            screen.blit(start_text, start_text.get_rect(center=start_rect.center))
-            screen.blit(setting_text, setting_text.get_rect(center=setting_rect.center))
-            screen.blit(credits_text, credits_text.get_rect(center=credits_rect.center))
+            pygame.draw.rect(SCREEN, brown, start_box, border_radius=20)
+            pygame.draw.rect(SCREEN, frame, start_box, 5, border_radius=20)
+            pygame.draw.rect(SCREEN, brown, setting_box, border_radius=20)
+            pygame.draw.rect(SCREEN, frame, setting_box, 5, border_radius=20)
+            pygame.draw.rect(SCREEN, brown, credits_box, border_radius=20)
+            pygame.draw.rect(SCREEN, frame, credits_box, 5, border_radius=20)
+            SCREEN.blit(start_text, start_text.get_rect(center=start_rect.center))
+            SCREEN.blit(setting_text, setting_text.get_rect(center=setting_rect.center))
+            SCREEN.blit(credits_text, credits_text.get_rect(center=credits_rect.center))
 
         # ---------- หน้า setting ----------
     elif state == "setting":
         # วาดกรอบสี่เหลี่ยม
-        pygame.draw.rect(screen, brown, setting_frame, border_radius=20)
-        pygame.draw.rect(screen, frame, setting_frame, 5, border_radius=20)
+        pygame.draw.rect(SCREEN, brown, setting_frame, border_radius=20)
+        pygame.draw.rect(SCREEN, frame, setting_frame, 5, border_radius=20)
 
         # แสดง Volume ตรงกลาง
         setting_font = sys_font.render("SETTING", True, text_press)
         vol_text = small_font.render(f"Volume: {int(round(volume*100))}%", True, text_press)
-        screen.blit(vol_text,(350,390))
+        SCREEN.blit(vol_text,(350,390))
 
                 # ปุ่ม + / -
         plus_color = white if vol_plus_rect.collidepoint(mouse_pos) else text_press
@@ -153,22 +170,22 @@ while running:
         # ตัวอักษร + / - บนปุ่ม (ไม่มี background)
         plus_text = small_font.render("+", True, plus_color)# สีตัวอักษร
         minus_text = small_font.render("-", True, minus_color)
-        screen.blit(setting_font, (330,300))
-        screen.blit(plus_text, plus_text.get_rect(center=vol_plus_rect.center))
-        screen.blit(minus_text, minus_text.get_rect(center=vol_minus_rect.center))
+        SCREEN.blit(setting_font, (330,300))
+        SCREEN.blit(plus_text, plus_text.get_rect(center=vol_plus_rect.center))
+        SCREEN.blit(minus_text, minus_text.get_rect(center=vol_minus_rect.center))
 
 
         # ปุ่ม Back
         back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
-        screen.blit(back_text, back_text.get_rect(center=back_rect.center))
+        SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
 
     elif state == "credits":
-        pygame.draw.rect(screen, brown, credits_frame, border_radius=20)
-        pygame.draw.rect(screen, frame, credits_frame, 5, border_radius=20)
+        pygame.draw.rect(SCREEN, brown, credits_frame, border_radius=20)
+        pygame.draw.rect(SCREEN, frame, credits_frame, 5, border_radius=20)
         
             # ---------- สร้าง Surface สำหรับ clipping ----------
-        clip_surf = screen.subsurface(credits_frame)  # วาดเฉพาะในกรอบ
+        clip_surf = SCREEN.subsurface(credits_frame)  # วาดเฉพาะในกรอบ
 
         credits_lines = [
             "CREDITS",
@@ -205,7 +222,7 @@ while running:
 
         back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
-        screen.blit(back_text, back_text.get_rect(center=back_rect.center))
+        SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
 
     pygame.display.flip()
 
