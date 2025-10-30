@@ -473,6 +473,86 @@ MSI_DEF = ItemDef(
 def make_Msi_item(quantity: int = 1) -> Item:
     return Item(definition=MSI_DEF, quantity=quantity)
 
+OPTHUS_DEF = ItemDef(
+    id="Opthus",
+    name="Opthus",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\opthus.png"
+)
+
+def make_Opthus_item(quantity: int = 1) -> Item:
+    return Item(definition=OPTHUS_DEF, quantity=quantity)
+
+PANDA_DEF = ItemDef(
+    id="Panda",
+    name="Panda",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\panda.png"
+)
+
+def make_Panda_item(quantity: int = 1) -> Item:
+    return Item(definition=PANDA_DEF, quantity=quantity)
+
+PUMA_DEF = ItemDef(
+    id="Puma",
+    name="Puma",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\puma.png"
+)
+
+def make_Puma_item(quantity: int = 1) -> Item:
+    return Item(definition=PUMA_DEF, quantity=quantity)
+
+RADIO_DEF = ItemDef(
+    id="Raio",
+    name="Radio",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Radio.png"
+)
+
+def make_Radio_item(quantity: int = 1) -> Item:
+    return Item(definition=RADIO_DEF, quantity=quantity)
+
+VANS_DEF = ItemDef(
+    id="Vans",
+    name="Vans",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Vans.png"
+)
+
+def make_Vans_item(quantity: int = 1) -> Item:
+    return Item(definition=VANS_DEF, quantity=quantity)
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size
