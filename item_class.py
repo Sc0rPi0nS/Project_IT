@@ -59,7 +59,6 @@ class Item:
     def total_value(self) -> int:
         return self.definition.value * max(1, self.quantity)
 
-
 # ====== ไอเทมตัวทดลอง 1: ขวดน้ำ ======
 TRIAL_DEF = ItemDef(
     id="trial_water",
@@ -68,7 +67,7 @@ TRIAL_DEF = ItemDef(
     rotatable=True,
     stackable=False,
     weight=1.0,
-    value=120,
+    value=200,
     image_path="item/น้ำสะอาด.png"
 )
 
@@ -83,7 +82,7 @@ BATTERY_DEF = ItemDef(
     stackable=True,
     max_stack=4,
     weight=0.3,
-    value=80,
+    value=60,
     image_path="item\เเบตเตอรี่.png"
 )
 
@@ -98,7 +97,7 @@ RTX_DEF = ItemDef(
     rotatable=True,
     stackable=False,
     weight=2.5,
-    value=5200,
+    value=2400,
     image_path="item\RTX พัง.png"
 )
 
@@ -113,7 +112,7 @@ MEDKIT_DEF = ItemDef(
     rotatable=True,
     stackable=False,    # ไม่ stack กัน
     weight=0.5,
-    value=250,
+    value=120,
     image_path="item\ยา.png"   # ✅ path ไปยังรูปยา
 )
 
@@ -130,7 +129,7 @@ CANFOOD_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=200,
+    value=250,
     image_path="item/can food.png"
 )
 
@@ -146,7 +145,7 @@ DIRWATER_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=40,
+    value=100,
     image_path="item\น้ำเน่า.png"
 )
 
@@ -162,7 +161,7 @@ CUCUMBER_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=160,
+    value=200,
     image_path="item\เเตงกวาเดอง.png"
 )
 
@@ -173,12 +172,12 @@ FLASHLIGT_DEF = ItemDef(
     id="Flashlight",
     name="Flashlight",
     size_w=1,
-    size_h=3,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=280,
     image_path="item\ไฟฉาย.png"
 )
 
@@ -194,7 +193,7 @@ BANDAGE_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=100,
     image_path="item\ผ้าพันเเผล.png"
 )
 
@@ -210,7 +209,7 @@ DIRTMEAT_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=80,
     image_path="item\เนื้อเน่า.png"
 )
 
@@ -226,7 +225,7 @@ ANTIVIRUS_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=160,
     image_path="itemlot2\Antivirus.png"
 )
 
@@ -242,7 +241,7 @@ BASEBALL_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=420,
     image_path="itemlot2\Baseball.png"
 )
 
@@ -252,13 +251,13 @@ def make_Baseball_item(quantity: int = 1) -> Item:
 BINOCULAR_DEF = ItemDef(
     id="BINOCULAR",
     name="BINOCULAR",
-    size_w=1,
+    size_w=2,
     size_h=1,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=180,
     image_path="itemlot2\Binoculars.png"
 )
 
@@ -274,7 +273,7 @@ BREAD_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=60,
     image_path="itemlot2\Bread.png"
 )
 
@@ -290,7 +289,7 @@ COMPASS_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=260,
     image_path="itemlot2\compass.png"
 )
 
@@ -306,7 +305,7 @@ ENERGYBAR_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=120,
     image_path="itemlot2\energy_bar.png"
 )
 
@@ -316,13 +315,13 @@ def make_EnergyBar_item(quantity: int = 1) -> Item:
 GLASSES_DEF = ItemDef(
     id="Glass",
     name="Glass",
-    size_w=1,
+    size_w=2,
     size_h=1,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=100,
     image_path="itemlot2\glass.png"
 )
 
@@ -332,13 +331,13 @@ def make_Glasses_item(quantity: int = 1) -> Item:
 KEYBOARD_DEF = ItemDef(
     id="Keyboard",
     name="Keyboard",
-    size_w=1,
-    size_h=1,
+    size_w=3,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=840,
     image_path="itemlot2\keyboard.png"
 )
 
@@ -354,7 +353,7 @@ LIGHTER_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=120,
     image_path="itemlot2\lighter.png"
 )
 
@@ -370,23 +369,7 @@ MOUSE_DEF = ItemDef(
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
-    image_path="itemlot2\mouse.png"
-)
-
-def make_Mouse_item(quantity: int = 1) -> Item:
-    return Item(definition=MOUSE_DEF, quantity=quantity)
-
-MOUSE_DEF = ItemDef(
-    id="Mouse",
-    name="Mouse",
-    size_w=1,
-    size_h=1,
-    rotatable=True,
-    stackable=False,
-    max_stack=1,
-    weight=0.5,
-    value=300,
+    value=130,
     image_path="itemlot2\mouse.png"
 )
 
@@ -396,13 +379,13 @@ def make_Mouse_item(quantity: int = 1) -> Item:
 CONVERSE_DEF = ItemDef(
     id="Converse",
     name="Converse",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=800,
     image_path="itemlot3\Converse.png"
 )
 
@@ -412,13 +395,13 @@ def make_Converse_item(quantity: int = 1) -> Item:
 JORDAN_DEF = ItemDef(
     id="Jordan",
     name="Jordan",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=1200,
     image_path="itemlot3\Jordan.png"
 )
 
@@ -428,13 +411,13 @@ def make_Jordan_item(quantity: int = 1) -> Item:
 MAC_DEF = ItemDef(
     id="Mac",
     name="Mac",
-    size_w=1,
-    size_h=1,
+    size_w=3,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=1440,
     image_path="itemlot3\Mac.png"
 )
 
@@ -444,13 +427,13 @@ def make_Mac_item(quantity: int = 1) -> Item:
 MASK_DEF = ItemDef(
     id="Mask",
     name="Mask",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=320,
     image_path="itemlot3\Mask.png"
 )
 
@@ -460,13 +443,13 @@ def make_Mask_item(quantity: int = 1) -> Item:
 MSI_DEF = ItemDef(
     id="MSI",
     name="MSI",
-    size_w=1,
-    size_h=1,
+    size_w=3,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=1200,
     image_path="itemlot3\Msi.png"
 )
 
@@ -476,13 +459,13 @@ def make_Msi_item(quantity: int = 1) -> Item:
 OPTHUS_DEF = ItemDef(
     id="Opthus",
     name="Opthus",
-    size_w=1,
+    size_w=2,
     size_h=1,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=320,
     image_path="itemlot3\opthus.png"
 )
 
@@ -492,13 +475,13 @@ def make_Opthus_item(quantity: int = 1) -> Item:
 PANDA_DEF = ItemDef(
     id="Panda",
     name="Panda",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=560,
     image_path="itemlot3\panda.png"
 )
 
@@ -508,13 +491,13 @@ def make_Panda_item(quantity: int = 1) -> Item:
 PUMA_DEF = ItemDef(
     id="Puma",
     name="Puma",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=560,
     image_path="itemlot3\puma.png"
 )
 
@@ -524,13 +507,13 @@ def make_Puma_item(quantity: int = 1) -> Item:
 RADIO_DEF = ItemDef(
     id="Raio",
     name="Radio",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=280,
     image_path="itemlot3\Radio.png"
 )
 
@@ -540,13 +523,13 @@ def make_Radio_item(quantity: int = 1) -> Item:
 VANS_DEF = ItemDef(
     id="Vans",
     name="Vans",
-    size_w=1,
-    size_h=1,
+    size_w=2,
+    size_h=2,
     rotatable=True,
     stackable=False,
     max_stack=1,
     weight=0.5,
-    value=300,
+    value=560,
     image_path="itemlot3\Vans.png"
 )
 
