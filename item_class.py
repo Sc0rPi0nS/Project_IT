@@ -536,6 +536,20 @@ VANS_DEF = ItemDef(
 def make_Vans_item(quantity: int = 1) -> Item:
     return Item(definition=VANS_DEF, quantity=quantity)
 
+IT_DEF = ItemDef(
+    id="it",
+    name="it",
+    size_w=2, size_h=2,
+    rotatable=True,
+    stackable=False,
+    weight=1.0,
+    value=5000,
+    image_path="itemlot3\IT_shirt.png"
+)
+
+def make_IT_item(quantity: int = 1) -> Item:
+    return Item(definition=IT_DEF, quantity=quantity)
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size

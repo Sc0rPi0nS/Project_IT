@@ -7,7 +7,7 @@ from item_class import Item, make_trial_item, item_pixel_size\
     , make_Flashlight_item, make_Bandage_item, make_DirtMeat_item, make_Antivirus_item, make_Baseball_item, make_Binocular_item\
     , make_Bread_item, make_Compass_item, make_EnergyBar_item, make_Glasses_item, make_Keyboard_item, make_Lighter_item\
     , make_Mouse_item, make_Converse_item, make_Jordan_item, make_Mac_item, make_Mask_item, make_Msi_item, make_Opthus_item\
-    , make_Panda_item, make_Puma_item, make_Radio_item, make_Vans_item
+    , make_Panda_item, make_Puma_item, make_Radio_item, make_Vans_item, make_IT_item
 
 pygame.init()
 
@@ -239,7 +239,8 @@ DROP_WEIGHTS = {
     "Panda": 3,
     "Puma" : 3,
     "Radio": 15,
-    "Vans" : 3
+    "Vans" : 3,
+    "IT" : 0.1
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
@@ -273,7 +274,8 @@ FACTORIES = {
     "Panda":          (lambda: make_Panda_item(1)) if callable(make_Panda_item) else None,
     "Puma":           (lambda: make_Puma_item(1)) if callable(make_Puma_item) else None,
     "Radio":          (lambda: make_Radio_item(1)) if callable(make_Radio_item) else None,
-    "Vans":           (lambda: make_Vans_item(1)) if callable(make_Vans_item) else None
+    "Vans":           (lambda: make_Vans_item(1)) if callable(make_Vans_item) else None,
+    "IT":           (lambda: make_IT_item(1)) if callable(make_IT_item) else None
 }
 
 def build_drop_table():
