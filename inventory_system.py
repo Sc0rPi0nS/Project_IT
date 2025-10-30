@@ -4,7 +4,9 @@ import random
 # เชื่อมกับ item_class
 from item_class import Item, make_trial_item, item_pixel_size\
     , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item,make_dirwater_item,make_cucumber_item\
-    , make_Flashlight_item, make_Bandage_item, make_DirtMeat_item
+    , make_Flashlight_item, make_Bandage_item, make_DirtMeat_item, make_Antivirus_item, make_Baseball_item, make_Binocular_item\
+    , make_Bread_item, make_Compass_item, make_EnergyBar_item, make_Glasses_item, make_Keyboard_item, make_Lighter_item\
+    , make_Mouse_item
 
 pygame.init()
 
@@ -204,7 +206,7 @@ def create_block_from_item(item: Item):
     sx, sy = SPAWN_RECT.centerx - w // 2, SPAWN_RECT.centery - h // 2
     return Block(sx, sy, w, h, random.choice(ITEM_COLORS), item=item)
 
-# ------------------ DROP TABLE (แก้ง่าย ปลอดภัย) ------------------
+# ------------------DROP TABLE------------------
 # ปรับเรทแค่ตรงนี้พอ! (ไม่ต้องรวมเป็น 100 ก็ได้)
 DROP_WEIGHTS = {
     "Purified Water": 20,
@@ -216,7 +218,18 @@ DROP_WEIGHTS = {
     "Cucamber":      20,
     "Flashlight":     20,
     "Bandage":        20,
-    "Dirt Meat": 20
+    "Dirt Meat": 20,
+    "Antivirus": 20,
+    "Baseball Bat": 20,
+    "Binoculars": 20,
+    "Bread": 20,
+    "Compass": 20,
+    "Energy Bar": 20,
+    "Glasses": 20,
+    "Keyboard": 20,
+    "Lighter": 20,
+    "Mouse": 20
+
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
@@ -230,7 +243,17 @@ FACTORIES = {
     "Cucamber":      (lambda: make_cucumber_item(1)) if callable(make_cucumber_item) else None,
     "Flashlight":     (lambda: make_Flashlight_item(1)) if callable(make_Flashlight_item) else None,
     "Bandage":        (lambda: make_Bandage_item(1)) if callable(make_Bandage_item) else None,
-    "Dirt Meat":      (lambda: make_DirtMeat_item(1)) if callable(make_DirtMeat_item) else None
+    "Dirt Meat":      (lambda: make_DirtMeat_item(1)) if callable(make_DirtMeat_item) else None,
+    "Antivirus":      (lambda: make_Antivirus_item(1)) if callable(make_Antivirus_item) else None,
+    "Baseball Bat":   (lambda: make_Baseball_item(1)) if callable(make_Baseball_item) else None,
+    "Binoculars":     (lambda: make_Binocular_item(1)) if callable(make_Binocular_item) else None,
+    "Bread":          (lambda: make_Bread_item(1)) if callable(make_Bread_item) else None,
+    "Compass":        (lambda: make_Compass_item(1)) if callable(make_Compass_item) else None,
+    "Energy Bar":     (lambda: make_EnergyBar_item(1)) if callable(make_EnergyBar_item) else None,
+    "Glasses":        (lambda: make_Glasses_item(1)) if callable(make_Glasses_item) else None,
+    "Keyboard":       (lambda: make_Keyboard_item(1)) if callable(make_Keyboard_item) else None,
+    "Lighter":        (lambda: make_Lighter_item(1)) if callable(make_Lighter_item) else None,
+    "Mouse":          (lambda: make_Mouse_item(1)) if callable(make_Mouse_item) else None
 }
 
 def build_drop_table():

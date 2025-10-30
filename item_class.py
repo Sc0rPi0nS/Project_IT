@@ -217,6 +217,166 @@ DIRTMEAT_DEF = ItemDef(
 def make_DirtMeat_item(quantity: int = 1) -> Item:
     return Item(definition=DIRTMEAT_DEF, quantity=quantity)
 
+ANTIVIRUS_DEF = ItemDef(
+    id="Antivirus",
+    name="Antivirus",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\Antivirus.png"
+)
+
+def make_Antivirus_item(quantity: int = 1) -> Item:
+    return Item(definition=ANTIVIRUS_DEF, quantity=quantity)
+
+BASEBALL_DEF = ItemDef(
+    id="Baseball",
+    name="Baseball",
+    size_w=3,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\Baseball.png"
+)
+
+def make_Baseball_item(quantity: int = 1) -> Item:
+    return Item(definition=BASEBALL_DEF, quantity=quantity)
+
+BINOCULAR_DEF = ItemDef(
+    id="BINOCULAR",
+    name="BINOCULAR",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\Binoculars.png"
+)
+
+def make_Binocular_item(quantity: int = 1) -> Item:
+    return Item(definition=BINOCULAR_DEF, quantity=quantity)
+
+BREAD_DEF = ItemDef(
+    id="Bread",
+    name="Bread",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\Bread.png"
+)
+
+def make_Bread_item(quantity: int = 1) -> Item:
+    return Item(definition=BREAD_DEF, quantity=quantity)
+
+COMPASS_DEF = ItemDef(
+    id="Compass",
+    name="Compass",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\compass.png"
+)
+
+def make_Compass_item(quantity: int = 1) -> Item:
+    return Item(definition=COMPASS_DEF, quantity=quantity)
+
+ENERGYBAR_DEF = ItemDef(
+    id="EnergyBar",
+    name="EnergyBar",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\energy_bar.png"
+)
+
+def make_EnergyBar_item(quantity: int = 1) -> Item:
+    return Item(definition=ENERGYBAR_DEF, quantity=quantity)
+
+GLASSES_DEF = ItemDef(
+    id="Glass",
+    name="Glass",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\glass.png"
+)
+
+def make_Glasses_item(quantity: int = 1) -> Item:
+    return Item(definition=GLASSES_DEF, quantity=quantity)
+
+KEYBOARD_DEF = ItemDef(
+    id="Keyboard",
+    name="Keyboard",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\keyboard.png"
+)
+
+def make_Keyboard_item(quantity: int = 1) -> Item:
+    return Item(definition=KEYBOARD_DEF, quantity=quantity)
+
+LIGHTER_DEF = ItemDef(
+    id="Lighter",
+    name="Lighter",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\lighter.png"
+)
+
+def make_Lighter_item(quantity: int = 1) -> Item:
+    return Item(definition=LIGHTER_DEF, quantity=quantity)
+
+MOUSE_DEF = ItemDef(
+    id="Mouse",
+    name="Mouse",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\mouse.png"
+)
+
+def make_Mouse_item(quantity: int = 1) -> Item:
+    return Item(definition=MOUSE_DEF, quantity=quantity)
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size
