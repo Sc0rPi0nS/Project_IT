@@ -30,7 +30,6 @@ GRID_SIZE = 65
 ROWS, COLS = 5, 5
 
 WHITE = (255, 255, 255)
-GRAY  = (200, 200, 200)
 BLACK = (0, 0, 0)
 ITEM_COLORS = [(255, 80, 80), (80, 200, 120), (80, 120, 255), (255, 220, 100)]
 
@@ -53,12 +52,42 @@ SPAWN_RECT = pygame.Rect(SPAWN_ORIGIN[0], SPAWN_ORIGIN[1], SPAWN_COLS * GRID_SIZ
 # ปุ่ม/พื้นที่ TRASH
 TRASH_RECT = pygame.Rect(578, 597, GRID_SIZE * 2, GRID_SIZE)
 
+# ---------- ควบคุมการแสดงปุ่ม ----------
+SHOW_BUTTONS = False          # False = ไม่วาดปุ่ม (ล่องหน แต่ยังคลิกได้)
+SHOW_HITBOX_WHEN_HOLD = True  # กดค้าง H เพื่อโชว์กรอบ hitbox ชั่วคราว
+
+# ---------- ค่าความโปร่งใสของกริด ----------
+GRID_LINE_ALPHA = 110          # ยิ่งต่ำยิ่งโปร่ง (แนะนำ 80–140)
+GRID_BORDER_ALPHA = 170
+GRID_LINE_COLOR   = (255, 255, 255, GRID_LINE_ALPHA)   # เส้นขาวโปร่งใส
+GRID_BORDER_COLOR = (0, 0, 0, GRID_BORDER_ALPHA)       # กรอบดำโปร่งใส
+
 # ------------------ ฟังก์ชันวาด ------------------
-def draw_grid(origin):
-    ox, oy = origin
-    for r in range(ROWS):
-        for c in range(COLS):
-            pygame.draw.rect(SCREEN, GRAY, (ox + c * GRID_SIZE, oy + r * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
+def draw_grid_alpha(origin, rows, cols, cell_size, line_color, border_color, border_w=2):
+    """วาดกริดโปร่งใสลงบน Surface แบบ SRCALPHA แล้ว blit ทับพื้นหลัง"""
+    w, h = cols * cell_size, rows * cell_size
+    surf = pygame.Surface((w, h), pygame.SRCALPHA)
+
+    # เส้นแนวตั้ง
+    for c in range(cols + 1):
+        x = c * cell_size
+        pygame.draw.line(surf, line_color, (x, 0), (x, h), 1)
+
+    # เส้นแนวนอน
+    for r in range(rows + 1):
+        y = r * cell_size
+        pygame.draw.line(surf, line_color, (0, y), (w, y), 1)
+
+    # เส้นกรอบรอบนอก
+    pygame.draw.rect(surf, border_color, (0, 0, w, h), border_w)
+
+    SCREEN.blit(surf, origin)
+
+def draw_inventory_grid():
+    draw_grid_alpha(GRID_ORIGIN, ROWS, COLS, GRID_SIZE, GRID_LINE_COLOR, GRID_BORDER_COLOR, border_w=2)
+
+def draw_spawn_grid():
+    draw_grid_alpha(SPAWN_ORIGIN, SPAWN_ROWS, SPAWN_COLS, GRID_SIZE, GRID_LINE_COLOR, GRID_BORDER_COLOR, border_w=3)
 
 def draw_inventory_value(total_value):
     font = pygame.font.SysFont(None, 28)
@@ -67,27 +96,35 @@ def draw_inventory_value(total_value):
     text_y = INVENTORY_RECT.bottom + 10
     SCREEN.blit(text_surface, (text_x, text_y))
 
-def draw_spawn_zone():
-    ox, oy = SPAWN_ORIGIN
-    for r in range(SPAWN_ROWS):
-        for c in range(SPAWN_COLS):
-            pygame.draw.rect(SCREEN, (220, 240, 255),
-                             (ox + c * GRID_SIZE, oy + r * GRID_SIZE, GRID_SIZE, GRID_SIZE), 1)
-    pygame.draw.rect(SCREEN, BLACK, SPAWN_RECT, 3)
-
 def draw_trash():
-    pygame.draw.rect(SCREEN, (240, 240, 240), TRASH_RECT)
-    pygame.draw.rect(SCREEN, BLACK, TRASH_RECT, 3)
-    font = pygame.font.SysFont(None, 28)
-    text_surface = font.render("TRASH", True, BLACK)
-    SCREEN.blit(text_surface, text_surface.get_rect(center=TRASH_RECT.center))
+    # ล่องหนโดยไม่วาดปุ่ม แต่ยังใช้ TRASH_RECT ตรวจชนได้
+    if SHOW_BUTTONS:
+        pygame.draw.rect(SCREEN, (240, 240, 240), TRASH_RECT)
+        pygame.draw.rect(SCREEN, BLACK, TRASH_RECT, 3)
+        font = pygame.font.SysFont(None, 28)
+        text_surface = font.render("TRASH", True, BLACK)
+        SCREEN.blit(text_surface, text_surface.get_rect(center=TRASH_RECT.center))
+    elif SHOW_HITBOX_WHEN_HOLD and pygame.key.get_pressed()[pygame.K_h]:
+        # โชว์กรอบเมื่อกดค้าง H (debug)
+        debug = pygame.Surface(TRASH_RECT.size, pygame.SRCALPHA)
+        debug.fill((255, 0, 0, 60))
+        SCREEN.blit(debug, TRASH_RECT.topleft)
+        pygame.draw.rect(SCREEN, (255, 0, 0), TRASH_RECT, 2)
 
 def draw_item_box():
-    pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
-    pygame.draw.rect(SCREEN, BLACK, BOX_RECT, 3)
-    font = pygame.font.SysFont(None, 32)
-    label = font.render("Search", True, BLACK)
-    SCREEN.blit(label, label.get_rect(center=BOX_RECT.center))
+    # ล่องหนโดยไม่วาดปุ่ม แต่ยังใช้ BOX_RECT ตรวจคลิกได้
+    if SHOW_BUTTONS:
+        pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
+        pygame.draw.rect(SCREEN, BLACK, BOX_RECT, 3)
+        font = pygame.font.SysFont(None, 32)
+        label = font.render("Search", True, BLACK)
+        SCREEN.blit(label, label.get_rect(center=BOX_RECT.center))
+    elif SHOW_HITBOX_WHEN_HOLD and pygame.key.get_pressed()[pygame.K_h]:
+        # โชว์กรอบเมื่อกดค้าง H (debug)
+        debug = pygame.Surface(BOX_RECT.size, pygame.SRCALPHA)
+        debug.fill((0, 128, 255, 60))
+        SCREEN.blit(debug, BOX_RECT.topleft)
+        pygame.draw.rect(SCREEN, (0, 128, 255), BOX_RECT, 2)
 
 # ------------------ คลาส Block ------------------
 class Block:
@@ -150,7 +187,7 @@ class Block:
             self.dragging = True
             mx, my = event.pos
             self.offset = (self.rect.x - mx, self.rect.y - my)
-        elif event.type == pygame.MOUSEBUTTON_UP and event.button == 1:
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             if self.dragging:
                 self.dragging = False
                 if TRASH_RECT.colliderect(self.rect):
@@ -304,10 +341,14 @@ while True:
     else:
         SCREEN.fill(WHITE)
 
-    draw_grid(GRID_ORIGIN)
+    # วาดกริดแบบโปร่งใส
+    draw_inventory_grid()
+    draw_spawn_grid()
+
+    # ปุ่ม (จะวาดหรือไม่ขึ้นกับแฟล็ก)
     draw_item_box()
-    draw_spawn_zone()
     draw_trash()
+
     for b in blocks:
         b.draw()
     draw_inventory_value(calc_inventory_total_value(blocks))
