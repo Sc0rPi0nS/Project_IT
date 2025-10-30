@@ -377,6 +377,102 @@ MOUSE_DEF = ItemDef(
 def make_Mouse_item(quantity: int = 1) -> Item:
     return Item(definition=MOUSE_DEF, quantity=quantity)
 
+MOUSE_DEF = ItemDef(
+    id="Mouse",
+    name="Mouse",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot2\mouse.png"
+)
+
+def make_Mouse_item(quantity: int = 1) -> Item:
+    return Item(definition=MOUSE_DEF, quantity=quantity)
+
+CONVERSE_DEF = ItemDef(
+    id="Converse",
+    name="Converse",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Converse.png"
+)
+
+def make_Converse_item(quantity: int = 1) -> Item:
+    return Item(definition=CONVERSE_DEF, quantity=quantity)
+
+JORDAN_DEF = ItemDef(
+    id="Jordan",
+    name="Jordan",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Jordan.png"
+)
+
+def make_Jordan_item(quantity: int = 1) -> Item:
+    return Item(definition=JORDAN_DEF, quantity=quantity)
+
+MAC_DEF = ItemDef(
+    id="Mac",
+    name="Mac",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Mac.png"
+)
+
+def make_Mac_item(quantity: int = 1) -> Item:
+    return Item(definition=MAC_DEF, quantity=quantity)
+
+MASK_DEF = ItemDef(
+    id="Mask",
+    name="Mask",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Mask.png"
+)
+
+def make_Mask_item(quantity: int = 1) -> Item:
+    return Item(definition=MASK_DEF, quantity=quantity)
+
+MSI_DEF = ItemDef(
+    id="MSI",
+    name="MSI",
+    size_w=1,
+    size_h=1,
+    rotatable=True,
+    stackable=False,
+    max_stack=1,
+    weight=0.5,
+    value=300,
+    image_path="itemlot3\Msi.png"
+)
+
+def make_Msi_item(quantity: int = 1) -> Item:
+    return Item(definition=MSI_DEF, quantity=quantity)
+
 # ====== Helper แปลงขนาดเป็นพิกเซล (ใช้กับ GRID_SIZE) ======
 def item_pixel_size(item: Item, grid_size: int) -> Tuple[int, int]:
     return item.width_slots * grid_size, item.height_slots * grid_size

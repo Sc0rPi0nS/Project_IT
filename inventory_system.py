@@ -6,7 +6,7 @@ from item_class import Item, make_trial_item, item_pixel_size\
     , make_medkit_item, make_battery_item, make_rtx_item, make_canfood_item,make_dirwater_item,make_cucumber_item\
     , make_Flashlight_item, make_Bandage_item, make_DirtMeat_item, make_Antivirus_item, make_Baseball_item, make_Binocular_item\
     , make_Bread_item, make_Compass_item, make_EnergyBar_item, make_Glasses_item, make_Keyboard_item, make_Lighter_item\
-    , make_Mouse_item
+    , make_Mouse_item, make_Converse_item, make_Jordan_item, make_Mac_item, make_Mask_item, make_Msi_item
 
 pygame.init()
 
@@ -228,8 +228,12 @@ DROP_WEIGHTS = {
     "Glasses": 20,
     "Keyboard": 20,
     "Lighter": 20,
-    "Mouse": 20
-
+    "Mouse": 20,
+    "Converse": 20,
+    "Jordan": 20,
+    "Mac": 20,
+    "Mask": 20,
+    "MSI": 99
 }
 
 # map ชื่อ -> factory (เฉพาะตัวที่มีอยู่จริง)
@@ -253,7 +257,12 @@ FACTORIES = {
     "Glasses":        (lambda: make_Glasses_item(1)) if callable(make_Glasses_item) else None,
     "Keyboard":       (lambda: make_Keyboard_item(1)) if callable(make_Keyboard_item) else None,
     "Lighter":        (lambda: make_Lighter_item(1)) if callable(make_Lighter_item) else None,
-    "Mouse":          (lambda: make_Mouse_item(1)) if callable(make_Mouse_item) else None
+    "Mouse":          (lambda: make_Mouse_item(1)) if callable(make_Mouse_item) else None,
+    "Converse":       (lambda: make_Converse_item(1)) if callable(make_Converse_item) else None,
+    "Jordan":         (lambda: make_Jordan_item(1)) if callable(make_Jordan_item) else None,
+    "Mac":            (lambda: make_Mac_item(1)) if callable(make_Mac_item) else None,
+    "Mask":           (lambda: make_Mask_item(1)) if callable(make_Mask_item) else None,
+    "MSI":            (lambda: make_Msi_item(1)) if callable(make_Msi_item) else None
 }
 
 def build_drop_table():
