@@ -8,13 +8,15 @@ pygame.init()
 #state
 state = "menu"
 volume = 1
-player_name = "Chotipat"
+player_name = ""  # ชื่อผู้เล่นเริ่มต้นว่าง
+input_active = False  # ตรวจสอบว่ากำลังพิมพ์อยู่หรือไม่
 
 # header
 pygame.display.set_caption("The Scavanger")
 
 # color
 white = (255, 255, 255)
+black = (0,0,0)
 green = (0, 255, 0)
 frame = (96, 62, 62)
 brown = (218, 169, 107)
@@ -41,13 +43,22 @@ bg_img = pygame.transform.scale(bg_img, (920,750))
 # สร้าง rect สำหรับปุ่ม
 
 start_rect = pygame.Rect(0, 0, 300, 100)
-start_rect.center = (470, 320)
+start_rect.center = (470, 250)
+
+tuto_rect = pygame.Rect(0, 0, 350, 100)
+tuto_rect.center = (470, 370)
 
 setting_rect = pygame.Rect(0, 0, 400, 100)
-setting_rect.center = (470, 450)
+setting_rect.center = (470, 490)
 
 credits_rect = pygame.Rect(0, 0, 500, 100)
-credits_rect.center = (470, 580)
+credits_rect.center = (470, 610)
+
+input_frame = pygame.Rect(0, 0, 400, 200)
+input_frame.center = (470, 300)
+
+tutorial_frame = pygame.Rect(0, 0, 800, 550)
+tutorial_frame.center = (470, 300)
 
 setting_frame = pygame.Rect(0, 0, 400, 200)
 setting_frame.center = (470, 375)
@@ -73,37 +84,36 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        elif event.type == pygame.MOUSEBUTTONDOWN and state == "menu":
-            if start_rect.collidepoint(event.pos):
-                click_sound.play()
-                subprocess.Popen(["python", "inventory_system.py", str(volume),player_name])
-                running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if state == "menu":
+                if start_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    state = "input_name"
+                    input_active = True  # เริ่มรับ input
+                elif tuto_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    state = "tutorial"
+                elif setting_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    state = "setting"
+                elif credits_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    state = "credits"
+            elif state in ["input_name","tutorial", "setting", "credits"]:
+                if back_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    state = "menu"
 
-            elif setting_rect.collidepoint(event.pos):
-                click_sound.play()
-                state = "setting"
-
-            elif credits_rect.collidepoint(event.pos):
-                click_sound.play()
-                state = "credits"
-
-        elif event.type == pygame.MOUSEBUTTONDOWN and state == "setting":
-            click_sound.play()
-            if back_rect.collidepoint(event.pos):
-                state = "menu"
-            elif vol_plus_rect.collidepoint(event.pos):
-                click_sound.play()
-                volume = min(1.0, volume + 0.1)
-                pygame.mixer.music.set_volume(volume)
-            elif vol_minus_rect.collidepoint(event.pos):
-                click_sound.play()
-                volume = max(0.0, volume - 0.1)
-                pygame.mixer.music.set_volume(volume)
-
-        elif event.type == pygame.MOUSEBUTTONDOWN and state == "credits":
-            click_sound.play()
-            if back_rect.collidepoint(event.pos):
-                state = "menu"
+        elif event.type == pygame.KEYDOWN and state == "input_name" and input_active:
+            if event.key == pygame.K_RETURN:  # กด Enter เริ่มเกม
+                if player_name.strip() != "":
+                    subprocess.Popen(["python", "inventory_system.py", str(volume), player_name])
+                    running = False
+            elif event.key == pygame.K_BACKSPACE:  # ลบตัวอักษร
+                player_name = player_name[:-1]
+            else:
+                if len(player_name) < 9:  # จำกัดความยาวชื่อ
+                    player_name += event.unicode
 
     SCREEN.blit(bg_img, (0, 0))
     mouse_pos = pygame.mouse.get_pos()
@@ -127,31 +137,120 @@ while running:
             SCREEN.blit(title_text, title_rect)
 
             start_color = white if start_rect.collidepoint(mouse_pos) else text_press
+            tuto_color = white if tuto_rect.collidepoint(mouse_pos) else text_press
             setting_color = white if setting_rect.collidepoint(mouse_pos) else text_press
             credits_color = white if credits_rect.collidepoint(mouse_pos) else text_press
 
             start_text = sys_font.render("START", True, start_color)
+            tuto_text = sys_font.render("TUTORIAL", True, tuto_color)
             setting_text = sys_font.render("SETTING", True, setting_color)
             credits_text = sys_font.render("CREDITS", True, credits_color)
 
             start_box = start_text.get_rect(center=start_rect.center)
+            tuto_box = tuto_text.get_rect(center=tuto_rect.center)
             setting_box = setting_text.get_rect(center=setting_rect.center)
             credits_box = credits_text.get_rect(center=credits_rect.center)
             padding = 30
             start_box.inflate_ip(padding, padding)
+            tuto_box.inflate_ip(padding, padding)
             setting_box.inflate_ip(padding, padding)
             credits_box.inflate_ip(padding, padding)
 
             pygame.draw.rect(SCREEN, brown, start_box, border_radius=20)
             pygame.draw.rect(SCREEN, frame, start_box, 5, border_radius=20)
+            pygame.draw.rect(SCREEN, brown, tuto_box, border_radius=20)
+            pygame.draw.rect(SCREEN, frame, tuto_box, 5, border_radius=20)
             pygame.draw.rect(SCREEN, brown, setting_box, border_radius=20)
             pygame.draw.rect(SCREEN, frame, setting_box, 5, border_radius=20)
             pygame.draw.rect(SCREEN, brown, credits_box, border_radius=20)
             pygame.draw.rect(SCREEN, frame, credits_box, 5, border_radius=20)
             SCREEN.blit(start_text, start_text.get_rect(center=start_rect.center))
+            SCREEN.blit(tuto_text, tuto_text.get_rect(center=tuto_rect.center))
             SCREEN.blit(setting_text, setting_text.get_rect(center=setting_rect.center))
             SCREEN.blit(credits_text, credits_text.get_rect(center=credits_rect.center))
 
+    elif state == "input_name":
+        # วาดกรอบใหญ่
+        pygame.draw.rect(SCREEN, brown, input_frame, border_radius=20)
+        pygame.draw.rect(SCREEN, frame, input_frame, 5, border_radius=20)
+
+        # ข้อความชี้แนะ
+        prompt_font = pygame.font.SysFont("bytebounce", 55)
+        prompt_text = prompt_font.render("Enter Your Name:", True, white)
+        SCREEN.blit(prompt_text, prompt_text.get_rect(center=(input_frame.centerx, input_frame.top + 80)))
+
+        # กรอบกล่องใส่ชื่อ
+        input_box = pygame.Rect(input_frame.left + 50, input_frame.top + 120, input_frame.width - 100, 60)
+        pygame.draw.rect(SCREEN, white, input_box, border_radius=10)        # Background ของ input
+        pygame.draw.rect(SCREEN, frame, input_box, 3, border_radius=10)     # ขอบ
+
+        # แสดงชื่อที่พิมพ์
+        name_font = pygame.font.SysFont("bytebounce", 50)
+        name_text = name_font.render(player_name, True, black)
+        SCREEN.blit(name_text, (input_box.x + 10, input_box.y + 10))
+
+        # เคอร์เซอร์กระพริบ
+        if input_active:
+            cursor_time = pygame.time.get_ticks() // 500 % 2  # กระพริบทุก 0.5 วินาที
+            if cursor_time == 0:
+                cursor_x = input_box.x + 10 + name_text.get_width() + 2
+                cursor_y = input_box.y + 10
+                cursor_height = name_text.get_height()
+                pygame.draw.line(SCREEN, black, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_height), 3)
+        # ปุ่ม Enter
+        enter_rect = pygame.Rect(0, 0, 200, 60)
+        enter_rect.center = (input_frame.centerx, input_box.bottom + 60)
+        enter_color = green if enter_rect.collidepoint(mouse_pos) else white
+        enter_text = sys_font.render("ENTER", True, enter_color)
+        SCREEN.blit(enter_text, enter_text.get_rect(center=enter_rect.center))
+
+        # ตรวจสอบปุ่ม Enter
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if enter_rect.collidepoint(event.pos) and player_name.strip() != "":
+                click_sound.play()
+                subprocess.Popen(["python", "inventory_system.py", str(volume), player_name])
+                running = False
+
+        # ปุ่ม Back
+        back_color = text_press if back_rect.collidepoint(mouse_pos) else white
+        back_text = sys_font.render("BACK", True, back_color)
+        SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
+    
+    elif state == "tutorial": 
+            pygame.draw.rect(SCREEN, brown, tutorial_frame, border_radius=20)
+            pygame.draw.rect(SCREEN, frame, tutorial_frame, 5, border_radius=20)
+            # แปะ tutorial text
+            tutorial_lines = [
+                "Goal: Collect as many valuable items as you can before the timer runs out!",
+                "Your total item value = your final score.",
+                "                                                How to Play                                ",
+                "Search for items: Click the Search box (blue area on the right) to spawn random items.",
+                "Each item has a different value rare ones score big!",
+                "Move items: Click + drag an item to move it.",
+                "Drop items into the 5x5 inventory grid (left side) to store them.",
+                "Rotate items: While dragging, press R to rotate.",
+                "Rotate strategically to make everything fit!",
+                "Trash unwanted items:",
+                "Drag any item into the trash zone (bottom-right) to delete it. 🗑️",
+                "🧨 Timer",
+                "You’ve got 30 seconds to collect and organize items.",
+                "When time’s up → your score is calculated automatically.",
+                "🏆 Leaderboard",
+                "After time’s up, your score gets saved.",
+                "Only the Top 10 players make it to the board.",
+                "Can you beat your own high score? 😏",
+                "💡 Tips",
+                "Bigger items don’t always mean better value — check the total 'Value' bar.",
+                "You can press H to show grid hitboxes for better placement.",
+                "Don’t waste time! Each second counts. 🕐",
+            ]
+            tutorial_font = pygame.font.SysFont("bytebounce", 20)
+            line_height = 35
+
+            # ปุ่ม Back
+            back_color = text_press if back_rect.collidepoint(mouse_pos) else white
+            back_text = sys_font.render("BACK", True, back_color)
+            SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
         # ---------- หน้า setting ----------
     elif state == "setting":
         # วาดกรอบสี่เหลี่ยม
