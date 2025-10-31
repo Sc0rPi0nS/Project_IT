@@ -109,13 +109,13 @@ while running:
     mouse_pos = pygame.mouse.get_pos()
 
     if state == "menu":
-            # ---------- วาดหัวข้อเกมตรงกลางบน พร้อม outline ----------
+            # ---------- Title game----------
             title_font = pygame.font.SysFont("bytebounce", 120)
             title_text = title_font.render("THE SCAVANGER", True, brown)
             title_rect = title_text.get_rect(center=(SCREEN.get_width() // 2, 100))  # ตรงกลางบน
 
-            # วาด outline รอบข้อความ
-            outline_color = frame  # สีขอบ
+            #outline
+            outline_color = frame
             outline_thickness = 3
             for dx in [-outline_thickness, 0, outline_thickness]:
                 for dy in [-outline_thickness, 0, outline_thickness]:
