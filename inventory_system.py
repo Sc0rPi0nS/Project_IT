@@ -31,9 +31,16 @@ else:
 
 volume = float(sys.argv[1]) if len(sys.argv) > 2 else 1
 player_name = sys.argv[2] if len(sys.argv) > 1 else "Guest"
+#sound
 pygame.mixer.music.load("sound/bg_music.mp3")
 pygame.mixer.music.set_volume(volume)
 pygame.mixer.music.play(-1)
+click_sound = pygame.mixer.Sound("sound/click-sound.mp3")
+click_sound.set_volume(1)
+bag_sound = pygame.mixer.Sound("sound/bag.mp3")
+bag_sound.set_volume(1)
+trash_sound = pygame.mixer.Sound("sound/trash.mp3")
+trash_sound.set_volume(1)
 
 ## ---------- Timer ----------
 countdown_time = 30 # (1 นาที)
@@ -300,8 +307,10 @@ class Block:
             if self.dragging:
                 self.dragging = False
                 if TRASH_RECT.colliderect(self.rect):
+                    trash_sound.play()
                     removed = True
                 else:
+                    bag_sound.play()
                     self.snap_to_nearest(all_blocks)
         elif event.type == pygame.MOUSEMOTION and self.dragging:
             mx, my = event.pos
@@ -555,9 +564,11 @@ while True:
                 dx = mx - MENU_BTN_CENTER[0]
                 dy = my - MENU_BTN_CENTER[1]
                 if dx*dx + dy*dy <= MENU_BTN_RADIUS*MENU_BTN_RADIUS:
+                    click_sound.play()
                     subprocess.Popen(["python", "main.py"])
                     pygame.quit(); sys.exit()
                 elif BOX_RECT.collidepoint(event.pos):
+                    click_sound.play()
                     if any(is_item_in_spawn_zone(b) for b in blocks):
                         print("⚠️ ต้องย้าย item ใน spawn zone ออกก่อน!")
                     else:
