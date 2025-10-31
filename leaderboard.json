@@ -20,6 +20,14 @@
         "score": 3340
     },
     {
+        "name": "Guest",
+        "score": 3090
+    },
+    {
+        "name": "Chotipat",
+        "score": 2960
+    },
+    {
         "name": "12",
         "score": 2730
     },
@@ -30,13 +38,5 @@
     {
         "name": "Guest",
         "score": 1840
-    },
-    {
-        "name": "Chotipat",
-        "score": 1100
-    },
-    {
-        "name": "Guest",
-        "score": 690
     }
 ]
