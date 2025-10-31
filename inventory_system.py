@@ -16,7 +16,6 @@ pygame.init()
 
 SCREEN = pygame.display.set_mode((920, 750))
 pygame.display.set_caption("Dual Inventory System (No Stack Overlay)")
-
 ##json
 LEADERBOARD_FILE = "leaderboard.json"
 # ---------- โหลด leaderboard ----------
@@ -43,7 +42,7 @@ trash_sound = pygame.mixer.Sound("sound/trash.mp3")
 trash_sound.set_volume(1)
 
 ## ---------- Timer ----------
-countdown_time = 30 # (1 นาที)
+countdown_time = 60 # (1 นาที)
 start_ticks = pygame.time.get_ticks()
 
 # ---------------- BACKGROUND ----------------
@@ -130,10 +129,12 @@ play_again_rect = pygame.Rect(0, 0, 250, 70)
 play_again_rect.center = (920//2, 750//2 + 150)  # วางใต้ข้อความ Time's Up
 
 def draw_play_again_button(surface):
-    pygame.draw.rect(surface, (100, 200, 255), play_again_rect, border_radius=15)
-    pygame.draw.rect(surface, BLACK, play_again_rect, 3, border_radius=15)
+    mouse_pos = pygame.mouse.get_pos()
+    pygame.draw.rect(surface, brown, play_again_rect, border_radius=15)
+    pygame.draw.rect(surface, frame, play_again_rect, 3, border_radius=15)
     font = pygame.font.SysFont("bytebounce", 40)
-    text_surface = font.render("Play Again", True, BLACK)
+    start_color = WHITE if play_again_rect.collidepoint(mouse_pos) else frame
+    text_surface = font.render("Back To Menu", True, start_color)
     surface.blit(text_surface, text_surface.get_rect(center=play_again_rect.center))
 def draw_menu_button(surface, center, radius):
     mouse_pos = pygame.mouse.get_pos()
@@ -511,13 +512,13 @@ while True:
         # --- Player name ---
         name_text = f"Player: {player_name}"
         name_surface = name_font.render(name_text, True, (0, 0, 0))
-        name_rect = name_surface.get_rect(center=(920//2, 300))
+        name_rect = name_surface.get_rect(center=(250, 340))
         draw_text_with_outline(name_text, name_font, BLACK, WHITE, name_rect.topleft)
 
         # --- Score ---
         score_text = f"Score: {score}"
         score_surface = name_font.render(score_text, True, (0, 0, 0))
-        score_rect = score_surface.get_rect(center=(920//2, name_rect.bottom + 40))
+        score_rect = score_surface.get_rect(center=(250, name_rect.bottom + 40))
         draw_text_with_outline(score_text, name_font, BLACK, WHITE, score_rect.topleft)
 
         # แสดง leaderboard 
@@ -576,11 +577,9 @@ while True:
                         new_block = create_block_from_item(new_item)
                         blocks.append(new_block)
                 elif time_up and play_again_rect.collidepoint(event.pos):
-                    # รีเซ็ตเกม
-                    blocks.clear()
-                    start_ticks = pygame.time.get_ticks()
-                    time_up = False
-                    score_added = False
+                    click_sound.play()
+                    subprocess.Popen(["python", "main.py"])
+                    pygame.quit(); sys.exit()
         for b in blocks[:]:
             if b.handle_event(event, blocks, keys):
                 blocks.remove(b)
