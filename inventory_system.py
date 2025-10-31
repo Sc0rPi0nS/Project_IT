@@ -36,7 +36,7 @@ pygame.mixer.music.set_volume(volume)
 pygame.mixer.music.play(-1)
 
 ## ---------- Timer ----------
-countdown_time = 3222 # วินาที (2 นาที)
+countdown_time = 3 # (1 นาที)
 start_ticks = pygame.time.get_ticks()
 
 # ---------------- BACKGROUND ----------------
@@ -84,7 +84,6 @@ SPAWN_RECT = pygame.Rect(SPAWN_ORIGIN[0], SPAWN_ORIGIN[1], SPAWN_COLS * GRID_SIZ
 # ปุ่ม/พื้นที่ TRASH
 TRASH_RECT = pygame.Rect(578, 597, GRID_SIZE * 2, GRID_SIZE)
 
-<<<<<<< HEAD
 # ปุ่มปิดเกม (Responsive)
 menu_radius = int(min(920, 750) * 0.035 * 1.4)
 menu_x = 920 - menu_radius - 20
@@ -155,7 +154,6 @@ GRID_BORDER_ALPHA = 170
 GRID_LINE_COLOR   = (255, 255, 255, GRID_LINE_ALPHA)   # เส้นขาวโปร่งใส
 GRID_BORDER_COLOR = (0, 0, 0, GRID_BORDER_ALPHA)       # กรอบดำโปร่งใส
 
-=======
 # ---------- ควบคุมการแสดงปุ่ม ----------
 SHOW_BUTTONS = False          # False = ไม่วาดปุ่ม (ล่องหน แต่ยังคลิกได้)
 SHOW_HITBOX_WHEN_HOLD = True  # กดค้าง H เพื่อโชว์กรอบ hitbox ชั่วคราว
@@ -167,7 +165,6 @@ GRID_LINE_COLOR   = (255, 255, 255, GRID_LINE_ALPHA)   # เส้นขาว�
 GRID_BORDER_COLOR = (0, 0, 0, GRID_BORDER_ALPHA)       # กรอบดำโปร่งใส
 
 # ------------------ ฟังก์ชันวาด ------------------
->>>>>>> 2ec8871887840462d272b2339c3fcfb22bcc6a4b
 def draw_grid_alpha(origin, rows, cols, cell_size, line_color, border_color, border_w=2):
     """วาดกริดโปร่งใสลงบน Surface แบบ SRCALPHA แล้ว blit ทับพื้นหลัง"""
     w, h = cols * cell_size, rows * cell_size
@@ -202,11 +199,8 @@ def draw_inventory_value(total_value):
     SCREEN.blit(text_surface, (text_x, text_y))
 
 def draw_trash():
-<<<<<<< HEAD
 # ล่องหนโดยไม่วาดปุ่ม แต่ยังใช้ TRASH_RECT ตรวจชนได้
-=======
     # ล่องหนโดยไม่วาดปุ่ม แต่ยังใช้ TRASH_RECT ตรวจชนได้
->>>>>>> 2ec8871887840462d272b2339c3fcfb22bcc6a4b
     if SHOW_BUTTONS:
         pygame.draw.rect(SCREEN, (240, 240, 240), TRASH_RECT)
         pygame.draw.rect(SCREEN, BLACK, TRASH_RECT, 3)
@@ -221,11 +215,8 @@ def draw_trash():
         pygame.draw.rect(SCREEN, (255, 0, 0), TRASH_RECT, 2)
 
 def draw_item_box():
-<<<<<<< HEAD
 # ล่องหนโดยไม่วาดปุ่ม แต่ยังใช้ BOX_RECT ตรวจคลิกได้
-=======
     # ล่องหนโดยไม่วาดปุ่ม แต่ยังใช้ BOX_RECT ตรวจคลิกได้
->>>>>>> 2ec8871887840462d272b2339c3fcfb22bcc6a4b
     if SHOW_BUTTONS:
         pygame.draw.rect(SCREEN, (230, 230, 230), BOX_RECT)
         pygame.draw.rect(SCREEN, BLACK, BOX_RECT, 3)
@@ -461,12 +452,12 @@ while True:
         draw_spawn_grid()
         draw_item_box()
         draw_trash()
+        draw_inventory_grid()
         draw_menu_button(SCREEN, MENU_BTN_CENTER, MENU_BTN_RADIUS)
         for b in blocks:
             b.draw()
         draw_inventory_value(calc_inventory_total_value(blocks))
 
-<<<<<<< HEAD
         #time text
         minutes = remaining // 60
         seconds = remaining % 60
@@ -515,19 +506,7 @@ while True:
         #Play again
         play_again_rect.center = (920//2, 750*5//6)  # อยู่ล่างสุด
         draw_play_again_button(SCREEN)
-=======
-    # วาดกริดแบบโปร่งใส
-    draw_inventory_grid()
-    draw_spawn_grid()
 
-    # ปุ่ม (จะวาดหรือไม่ขึ้นกับแฟล็ก)
-    draw_item_box()
-    draw_trash()
-
-    for b in blocks:
-        b.draw()
-    draw_inventory_value(calc_inventory_total_value(blocks))
->>>>>>> 2ec8871887840462d272b2339c3fcfb22bcc6a4b
 
     keys = pygame.key.get_pressed()
     for event in pygame.event.get():
@@ -554,10 +533,6 @@ while True:
                     start_ticks = pygame.time.get_ticks()
                     time_up = False
                     score_added = False
-
-        for b in list(blocks):
-            if b.handle_event(event, blocks, keys):
-                blocks.remove(b)
 
     pygame.display.flip()
     clock.tick(60)
