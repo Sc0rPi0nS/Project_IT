@@ -36,7 +36,7 @@ pygame.mixer.music.set_volume(volume)
 pygame.mixer.music.play(-1)
 
 ## ---------- Timer ----------
-countdown_time = 3 # (1 นาที)
+countdown_time = 30 # (1 นาที)
 start_ticks = pygame.time.get_ticks()
 
 # ---------------- BACKGROUND ----------------
@@ -108,6 +108,11 @@ def add_score(player_name,score):
 # ---------- ฟังก์ชันแสดง leaderboard ----------
 def show_leaderboard(surface, font, start_x, start_y):
     y = start_y
+    # เพิ่มหัวข้อ "Top 10"
+    header_font = pygame.font.SysFont("bytebounce", 35)
+    header_text = header_font.render("Top 10", True, BLACK)
+    surface.blit(header_text, (start_x+45, y))
+    y += header_text.get_height() + 10  # เว้นระยะก่อนอันดับ 1
     for idx, entry in enumerate(leaderboard):
         text = score_font.render(f"{idx+1}. {entry['name']} - {entry['score']}", True, BLACK)
         surface.blit(text, (start_x, y))
@@ -476,7 +481,6 @@ while True:
         pygame.draw.rect(SCREEN, WHITE, timer_rect,border_radius=15)       # กรอบพื้นหลังสีขาว
         pygame.draw.rect(SCREEN, BLACK, timer_rect, 3,border_radius=15)    # ขอบสีดำหนา 3
         SCREEN.blit(timer_text, (timer_x, timer_y))
-         # --- หน้าจอ Time's Up --- 
     else:
         # --- หน้าจอ Time's Up --- 
         SCREEN.blit(happy_img, (0,0)) 
@@ -484,23 +488,56 @@ while True:
             score = calc_inventory_total_value(blocks) 
             add_score(player_name,score) 
             score_added = True 
-        # --- เพิ่ม Player Name --- 
-        name_font = pygame.font.SysFont("bytebounce",60) 
-        name_surface = name_font.render(f"Player: {player_name}", True, BLACK) 
-        name_rect = name_surface.get_rect(center=(920//2, 750//2)) 
-        SCREEN.blit(name_surface, name_rect) 
-        # --- เพิ่ม Score --- 
-        score_surface = name_font.render(f"Score: {score}", True, BLACK) 
-        score_rect = score_surface.get_rect(center=(920//2, name_rect.bottom + 40)) 
-        SCREEN.blit(score_surface, score_rect) 
+        name_font = pygame.font.SysFont("bytebounce", 60)
+        # --- ฟังก์ชันวาดข้อความพร้อม outline ---
+        def draw_text_with_outline(text, font, text_color, outline_color, pos, outline_thickness=3):
+            base_surface = font.render(text, True, text_color)
+            for dx in [-outline_thickness, 0, outline_thickness]:
+                for dy in [-outline_thickness, 0, outline_thickness]:
+                    if dx != 0 or dy != 0:
+                        outline_surface = font.render(text, True, outline_color)
+                        SCREEN.blit(outline_surface, (pos[0] + dx, pos[1] + dy))
+            SCREEN.blit(base_surface, pos)
+
+        # --- Player name ---
+        name_text = f"Player: {player_name}"
+        name_surface = name_font.render(name_text, True, (0, 0, 0))
+        name_rect = name_surface.get_rect(center=(920//2, 300))
+        draw_text_with_outline(name_text, name_font, BLACK, WHITE, name_rect.topleft)
+
+        # --- Score ---
+        score_text = f"Score: {score}"
+        score_surface = name_font.render(score_text, True, (0, 0, 0))
+        score_rect = score_surface.get_rect(center=(920//2, name_rect.bottom + 40))
+        draw_text_with_outline(score_text, name_font, BLACK, WHITE, score_rect.topleft)
+
         # แสดง leaderboard 
         leaderboard_width = int(920 * 0.25) 
         leaderboard_height = int(750 * 0.4) 
         leaderboard_x = 920 - leaderboard_width - 50 
         leaderboard_y = 750*0.35 
         leaderboard_rect = pygame.Rect(leaderboard_x, leaderboard_y, leaderboard_width, leaderboard_height) 
+
         pygame.draw.rect(SCREEN, brown, leaderboard_rect, border_radius=10) 
-        pygame.draw.rect(SCREEN, frame, leaderboard_rect, 3, border_radius=10) 
+        pygame.draw.rect(SCREEN, frame, leaderboard_rect, 3, border_radius=10)
+        # หัวข้อ Leaderboard ด้านบนกรอบ
+        title_font = pygame.font.SysFont("bytebounce", 40)
+        title_surface = title_font.render("Leaderboard", True, BLACK)
+        
+        # จัดตำแหน่งให้อยู่เหนือกรอบนิดหน่อย (กลางแนวนอน)
+        title_x = leaderboard_rect.centerx - title_surface.get_width() // 2
+        title_y = leaderboard_rect.top - title_surface.get_height() - 10  # 10px เหนือกรอบ
+        title_rect = title_surface.get_rect(topleft=(title_x, title_y))
+        #outline
+        outline_color = frame
+        outline_thickness = 3
+        for dx in [-outline_thickness, 0, outline_thickness]:
+            for dy in [-outline_thickness, 0, outline_thickness]:
+                if dx != 0 or dy != 0:  # ข้ามตำแหน่งตรงกลาง
+                    outline_text = title_font.render("Leaderboard", True, WHITE)
+                    SCREEN.blit(outline_text, title_rect.move(dx, dy))
+
+        SCREEN.blit(title_surface, (title_x, title_y))
         show_leaderboard(SCREEN, small_font, leaderboard_x+20, leaderboard_y+20)
 
         #Play again
@@ -533,6 +570,9 @@ while True:
                     start_ticks = pygame.time.get_ticks()
                     time_up = False
                     score_added = False
+        for b in blocks[:]:
+            if b.handle_event(event, blocks, keys):
+                blocks.remove(b)
 
     pygame.display.flip()
     clock.tick(60)
