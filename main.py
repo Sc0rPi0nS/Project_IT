@@ -223,29 +223,33 @@ while running:
             tutorial_lines = [
                 "Goal: Collect as many valuable items as you can before the timer runs out!",
                 "Your total item value = your final score.",
-                "                                                How to Play                                ",
+                "How to Play",
                 "Search for items: Click the Search box (blue area on the right) to spawn random items.",
                 "Each item has a different value rare ones score big!",
                 "Move items: Click + drag an item to move it.",
                 "Drop items into the 5x5 inventory grid (left side) to store them.",
                 "Rotate items: While dragging, press R to rotate.",
-                "Rotate strategically to make everything fit!",
-                "Trash unwanted items:",
-                "Drag any item into the trash zone (bottom-right) to delete it. 🗑️",
-                "🧨 Timer",
-                "You’ve got 30 seconds to collect and organize items.",
-                "When time’s up → your score is calculated automatically.",
-                "🏆 Leaderboard",
-                "After time’s up, your score gets saved.",
+                "Trash unwanted items: Drag any item into the trash zone (bottom - right) to delete it.",
+                "Timer : You got 30 seconds to collect and organize items.",
+                "When time's up : your score is calculated automatically.",
+                "Leaderboard",
+                "After time's up, your score gets saved.",
                 "Only the Top 10 players make it to the board.",
-                "Can you beat your own high score? 😏",
-                "💡 Tips",
-                "Bigger items don’t always mean better value — check the total 'Value' bar.",
-                "You can press H to show grid hitboxes for better placement.",
-                "Don’t waste time! Each second counts. 🕐",
             ]
             tutorial_font = pygame.font.SysFont("bytebounce", 20)
             line_height = 35
+
+        # คำนวณความสูงรวมของข้อความทั้งหมด
+            total_text_height = len(tutorial_lines) * line_height
+
+        # เริ่มวาดให้อยู่ตรงกลางแนวตั้งในกรอบ
+            start_y = tutorial_frame.top + (tutorial_frame.height - total_text_height) // 2
+
+            for i, line in enumerate(tutorial_lines):
+                text_surf = tutorial_font.render(line, True, white)
+                text_rect = text_surf.get_rect(centerx=tutorial_frame.centerx)  # จัดตรงกลางแนวนอน
+                text_rect.top = start_y + i * line_height
+                SCREEN.blit(text_surf, text_rect)
 
             # ปุ่ม Back
             back_color = text_press if back_rect.collidepoint(mouse_pos) else white
