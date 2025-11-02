@@ -321,7 +321,7 @@ while running:
             clip_surf.blit(surf, rect)
 
         # เลื่อนขึ้น
-        credits_y -= 0.5  # ความเร็วปรับได้
+        credits_y -= 0.1  # ความเร็วปรับได้
         if credits_y + total_height < 0:  # ถ้าเลื่อนหมด
             credits_y = credits_frame.height  # เริ่มใหม่ หรือกลับเมนู
 
