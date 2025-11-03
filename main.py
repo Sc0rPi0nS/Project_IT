@@ -102,7 +102,19 @@ while running:
                 elif credits_rect.collidepoint(event.pos):
                     click_sound.play()
                     state = "credits"
-            elif state in ["input_name","tutorial", "setting", "credits"]:
+            elif state == "setting":
+                if back_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    state = "menu"
+                elif vol_plus_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    volume = min(1.0, volume + 0.1)
+                    pygame.mixer.music.set_volume(volume)
+                elif vol_minus_rect.collidepoint(event.pos):
+                    click_sound.play()
+                    volume = max(0.0, volume - 0.1)
+                    pygame.mixer.music.set_volume(volume)
+            elif state in ["input_name","tutorial", "credits"]:
                 if back_rect.collidepoint(event.pos):
                     click_sound.play()
                     state = "menu"
@@ -185,8 +197,8 @@ while running:
 
         #input frame
         input_box = pygame.Rect(input_frame.left + 50, input_frame.top + 120, input_frame.width - 100, 60)
-        pygame.draw.rect(SCREEN, white, input_box, border_radius=10)        # Background ของ input
-        pygame.draw.rect(SCREEN, frame, input_box, 3, border_radius=10)     # ขอบ
+        pygame.draw.rect(SCREEN, white, input_box, border_radius=10)
+        pygame.draw.rect(SCREEN, frame, input_box, 3, border_radius=10)
 
         #name
         name_font = pygame.font.SysFont("bytebounce", 50)
@@ -195,7 +207,7 @@ while running:
 
         #cursor
         if input_active:
-            cursor_time = pygame.time.get_ticks() // 500 % 2  # กระพริบทุก 0.5 วินาที
+            cursor_time = pygame.time.get_ticks() // 500 % 2
             if cursor_time == 0:
                 cursor_x = input_box.x + 10 + name_text.get_width() + 2
                 cursor_y = input_box.y + 10
