@@ -8,8 +8,8 @@ pygame.init()
 #state
 state = "menu"
 volume = 1
-player_name = ""  # ชื่อผู้เล่นเริ่มต้นว่าง
-input_active = False  # ตรวจสอบว่ากำลังพิมพ์อยู่หรือไม่
+player_name = ""
+input_active = False
 
 # header
 pygame.display.set_caption("The Scavanger")
@@ -32,15 +32,17 @@ click_sound.set_volume(1)
 # resolution
 SCREEN = pygame.display.set_mode((920,750), pygame.RESIZABLE)
 
-# font
+#font
 sys_font = pygame.font.SysFont("bytebounce", 100)
 small_font = pygame.font.SysFont("bytebounce", 50)
 
 # background
 bg_img = pygame.image.load("background/bg2.png").convert_alpha()
 bg_img = pygame.transform.scale(bg_img, (920,750))
+tutorial_img = pygame.image.load("background/tutorial.png").convert_alpha()
+tutorial_img = pygame.transform.scale(tutorial_img, (500,600))
 
-# สร้าง rect สำหรับปุ่ม
+#rect
 
 start_rect = pygame.Rect(0, 0, 300, 100)
 start_rect.center = (470, 250)
@@ -78,18 +80,19 @@ vol_plus_rect.center = (620, 409)
 vol_minus_rect = pygame.Rect(0, 0, 50, 50)
 vol_minus_rect.center = (320, 410)
 
+#game run
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+        #mouse click
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if state == "menu":
                 if start_rect.collidepoint(event.pos):
                     click_sound.play()
                     state = "input_name"
-                    input_active = True  # เริ่มรับ input
+                    input_active = True
                 elif tuto_rect.collidepoint(event.pos):
                     click_sound.play()
                     state = "tutorial"
@@ -103,37 +106,37 @@ while running:
                 if back_rect.collidepoint(event.pos):
                     click_sound.play()
                     state = "menu"
-
+        #input
         elif event.type == pygame.KEYDOWN and state == "input_name" and input_active:
-            if event.key == pygame.K_RETURN:  # กด Enter เริ่มเกม
+            if event.key == pygame.K_RETURN:
                 if player_name.strip() != "":
                     subprocess.Popen(["python", "inventory_system.py", str(volume), player_name])
                     running = False
-            elif event.key == pygame.K_BACKSPACE:  # ลบตัวอักษร
+            elif event.key == pygame.K_BACKSPACE:
                 player_name = player_name[:-1]
             else:
-                if len(player_name) < 9:  # จำกัดความยาวชื่อ
+                if len(player_name) < 9:
                     player_name += event.unicode
 
     SCREEN.blit(bg_img, (0, 0))
     mouse_pos = pygame.mouse.get_pos()
-
+    
+    #menu
     if state == "menu":
             # ---------- Title game----------
             title_font = pygame.font.SysFont("bytebounce", 120)
             title_text = title_font.render("THE SCAVANGER", True, brown)
-            title_rect = title_text.get_rect(center=(SCREEN.get_width() // 2, 100))  # ตรงกลางบน
+            title_rect = title_text.get_rect(center=(SCREEN.get_width() // 2, 100))
 
             #outline
             outline_color = frame
             outline_thickness = 3
             for dx in [-outline_thickness, 0, outline_thickness]:
                 for dy in [-outline_thickness, 0, outline_thickness]:
-                    if dx != 0 or dy != 0:  # ข้ามตำแหน่งตรงกลาง
+                    if dx != 0 or dy != 0:
                         outline_text = title_font.render("THE SCAVANGER", True, outline_color)
                         SCREEN.blit(outline_text, title_rect.move(dx, dy))
 
-            # วาดข้อความ
             SCREEN.blit(title_text, title_rect)
 
             start_color = white if start_rect.collidepoint(mouse_pos) else text_press
@@ -169,27 +172,28 @@ while running:
             SCREEN.blit(setting_text, setting_text.get_rect(center=setting_rect.center))
             SCREEN.blit(credits_text, credits_text.get_rect(center=credits_rect.center))
 
+    #input
     elif state == "input_name":
-        # วาดกรอบใหญ่
+        #frame
         pygame.draw.rect(SCREEN, brown, input_frame, border_radius=20)
         pygame.draw.rect(SCREEN, frame, input_frame, 5, border_radius=20)
 
-        # ข้อความชี้แนะ
+        #text
         prompt_font = pygame.font.SysFont("bytebounce", 55)
         prompt_text = prompt_font.render("Enter Your Name:", True, white)
         SCREEN.blit(prompt_text, prompt_text.get_rect(center=(input_frame.centerx, input_frame.top + 80)))
 
-        # กรอบกล่องใส่ชื่อ
+        #input frame
         input_box = pygame.Rect(input_frame.left + 50, input_frame.top + 120, input_frame.width - 100, 60)
         pygame.draw.rect(SCREEN, white, input_box, border_radius=10)        # Background ของ input
         pygame.draw.rect(SCREEN, frame, input_box, 3, border_radius=10)     # ขอบ
 
-        # แสดงชื่อที่พิมพ์
+        #name
         name_font = pygame.font.SysFont("bytebounce", 50)
         name_text = name_font.render(player_name, True, black)
         SCREEN.blit(name_text, (input_box.x + 10, input_box.y + 10))
 
-        # เคอร์เซอร์กระพริบ
+        #cursor
         if input_active:
             cursor_time = pygame.time.get_ticks() // 500 % 2  # กระพริบทุก 0.5 วินาที
             if cursor_time == 0:
@@ -197,88 +201,74 @@ while running:
                 cursor_y = input_box.y + 10
                 cursor_height = name_text.get_height()
                 pygame.draw.line(SCREEN, black, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_height), 3)
-        # ปุ่ม Enter
+        
+        #enter
         enter_rect = pygame.Rect(0, 0, 200, 60)
         enter_rect.center = (input_frame.centerx, input_box.bottom + 60)
         enter_color = green if enter_rect.collidepoint(mouse_pos) else white
         enter_text = sys_font.render("ENTER", True, enter_color)
         SCREEN.blit(enter_text, enter_text.get_rect(center=enter_rect.center))
 
-        # ตรวจสอบปุ่ม Enter
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if enter_rect.collidepoint(event.pos) and player_name.strip() != "":
                 click_sound.play()
                 subprocess.Popen(["python", "inventory_system.py", str(volume), player_name])
                 running = False
 
-        # ปุ่ม Back
+        #back
         back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
         SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
     
-    elif state == "tutorial": 
-            pygame.draw.rect(SCREEN, brown, tutorial_frame, border_radius=20)
-            pygame.draw.rect(SCREEN, frame, tutorial_frame, 5, border_radius=20)
-            # แปะ tutorial text
-            tutorial_lines = [
-                "Goal: Collect as many valuable items as you can before the timer runs out!",
-                "Your total item value = your final score.",
-                "How to Play",
-                "Search for items: Click the Search box (blue area on the right) to spawn random items.",
-                "Each item has a different value rare ones score big!",
-                "Move items: Click + drag an item to move it.",
-                "Drop items into the 5x5 inventory grid (left side) to store them.",
-                "Rotate items: While dragging, press R to rotate.",
-                "Trash unwanted items: Drag any item into the trash zone (bottom - right) to delete it.",
-                "Timer : You got 30 seconds to collect and organize items.",
-                "When time's up : your score is calculated automatically.",
-                "Leaderboard",
-                "After time's up, your score gets saved.",
-                "Only the Top 10 players make it to the board.",
-            ]
-            tutorial_font = pygame.font.SysFont("bytebounce", 20)
-            line_height = 35
+    #tutorial
+    elif state == "tutorial":
+        #imaga tutorial
+        img_rect = tutorial_img.get_rect(center=tutorial_frame.center)
+        
+        rounded_surface = pygame.Surface(tutorial_img.get_size(), pygame.SRCALPHA)
+        
+        radius = 30
+        mask = pygame.Surface(tutorial_img.get_size(), pygame.SRCALPHA)
+        pygame.draw.rect(mask, (255, 255, 255), mask.get_rect(), border_radius=radius)
+        
+        rounded_surface.blit(tutorial_img, (0, 0))
+        rounded_surface.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        
+        shadow = pygame.Surface((img_rect.width + 10, img_rect.height + 10), pygame.SRCALPHA)
+        pygame.draw.rect(shadow, (0, 0, 0, 120), shadow.get_rect(), border_radius=radius + 5)
+        SCREEN.blit(shadow, img_rect.move(5, 5))
 
-        # คำนวณความสูงรวมของข้อความทั้งหมด
-            total_text_height = len(tutorial_lines) * line_height
+        SCREEN.blit(rounded_surface, img_rect)
+        pygame.draw.rect(SCREEN, frame, img_rect, 8, border_radius=radius)
 
-        # เริ่มวาดให้อยู่ตรงกลางแนวตั้งในกรอบ
-            start_y = tutorial_frame.top + (tutorial_frame.height - total_text_height) // 2
+        #back
+        back_color = text_press if back_rect.collidepoint(mouse_pos) else white
+        back_text = sys_font.render("BACK", True, back_color)
+        SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
 
-            for i, line in enumerate(tutorial_lines):
-                text_surf = tutorial_font.render(line, True, white)
-                text_rect = text_surf.get_rect(centerx=tutorial_frame.centerx)  # จัดตรงกลางแนวนอน
-                text_rect.top = start_y + i * line_height
-                SCREEN.blit(text_surf, text_rect)
-
-            # ปุ่ม Back
-            back_color = text_press if back_rect.collidepoint(mouse_pos) else white
-            back_text = sys_font.render("BACK", True, back_color)
-            SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
         # ---------- หน้า setting ----------
     elif state == "setting":
-        # วาดกรอบสี่เหลี่ยม
+        #setting frame
         pygame.draw.rect(SCREEN, brown, setting_frame, border_radius=20)
         pygame.draw.rect(SCREEN, frame, setting_frame, 5, border_radius=20)
 
-        # แสดง Volume ตรงกลาง
+        #volume
         setting_font = sys_font.render("SETTING", True, text_press)
         vol_text = small_font.render(f"Volume: {int(round(volume*100))}%", True, text_press)
         SCREEN.blit(vol_text,(350,390))
 
-                # ปุ่ม + / -
+        #plus-minus
         plus_color = white if vol_plus_rect.collidepoint(mouse_pos) else text_press
         minus_color = white if vol_minus_rect.collidepoint(mouse_pos) else text_press
 
-        # ตัวอักษร + / - บนปุ่ม (ไม่มี background)
-        plus_text = small_font.render("+", True, plus_color)# สีตัวอักษร
+        plus_text = small_font.render("+", True, plus_color)
         minus_text = small_font.render("-", True, minus_color)
         SCREEN.blit(setting_font, (330,300))
         SCREEN.blit(plus_text, plus_text.get_rect(center=vol_plus_rect.center))
         SCREEN.blit(minus_text, minus_text.get_rect(center=vol_minus_rect.center))
 
 
-        # ปุ่ม Back
+        #back
         back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
         SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
@@ -287,8 +277,8 @@ while running:
         pygame.draw.rect(SCREEN, brown, credits_frame, border_radius=20)
         pygame.draw.rect(SCREEN, frame, credits_frame, 5, border_radius=20)
         
-            # ---------- สร้าง Surface สำหรับ clipping ----------
-        clip_surf = SCREEN.subsurface(credits_frame)  # วาดเฉพาะในกรอบ
+        #credit frame
+        clip_surf = SCREEN.subsurface(credits_frame)
 
         credits_lines = [
             "CREDITS",
@@ -312,20 +302,18 @@ while running:
         total_height = len(credits_lines) * line_height
 
         if "credits_y" not in locals():
-            credits_y = credits_frame.height  # เริ่มจากด้านล่างกรอบ
+            credits_y = credits_frame.height
 
-        # วาดแต่ละบรรทัดภายใน clip_surf
         for i, text in enumerate(credits_lines):
             surf = credit_font.render(text, True, text_press)
             rect = surf.get_rect(center=(credits_frame.width // 2, credits_y + i * line_height))
             clip_surf.blit(surf, rect)
 
-        # เลื่อนขึ้น
-        credits_y -= 0.1  # ความเร็วปรับได้
-        if credits_y + total_height < 0:  # ถ้าเลื่อนหมด
-            credits_y = credits_frame.height  # เริ่มใหม่ หรือกลับเมนู
+        credits_y -= 0.1
+        if credits_y + total_height < 0:
+            credits_y = credits_frame.height
 
-
+        #back
         back_color = text_press if back_rect.collidepoint(mouse_pos) else white
         back_text = sys_font.render("BACK", True, back_color)
         SCREEN.blit(back_text, back_text.get_rect(center=back_rect.center))
