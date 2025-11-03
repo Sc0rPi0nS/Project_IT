@@ -1,8 +1,6 @@
 '''Menu Interface'''
 import pygame
 import subprocess
-"from inventory_system import"
-"from item_class import"
 pygame.init()
 
 #state
@@ -102,6 +100,7 @@ while running:
                 elif credits_rect.collidepoint(event.pos):
                     click_sound.play()
                     state = "credits"
+
             elif state == "setting":
                 if back_rect.collidepoint(event.pos):
                     click_sound.play()
@@ -114,6 +113,7 @@ while running:
                     click_sound.play()
                     volume = max(0.0, volume - 0.1)
                     pygame.mixer.music.set_volume(volume)
+
             elif state in ["input_name","tutorial", "credits"]:
                 if back_rect.collidepoint(event.pos):
                     click_sound.play()
